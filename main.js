@@ -58,3 +58,45 @@ ipcMain.handle('get-theme', () => {
 ipcMain.handle('get-app-version', () => {
   return app.getVersion();
 });
+
+const server = 'https://update.electronjs.org'
+const feed = `${server}/saica1101/valorant-mouse-sensitivity-utility/${process.platform}-${process.arch}/${app.getVersion()}`
+
+if (app.isPackaged) {
+  autoUpdater.setFeedURL({
+    url: feed,
+  });
+  autoUpdater.checkForUpdates();
+
+  autoUpdater.on("update-downloaded", async () => {
+    const returnValue = await dialog.showMessageBox({
+      message: "アップデートあり",
+      detail: "再起動してインストールできます。",
+      buttons: ["再起動", "後で"],
+    });
+    if (returnValue.response === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  })
+
+  autoUpdater.on("update-available", () => {
+    dialog.showMessageBox({
+      message: "アップデートがあります",
+      buttons: ["OK"],
+    });
+  });
+
+  autoUpdater.on("update-not-available", () => {
+    dialog.showMessageBox({
+      message: "アップデートはありません",
+      buttons: ["OK"],
+    });
+  });
+
+  autoUpdater.on("error", () => {
+    dialog.showMessageBox({
+      message: "アップデートエラーが発生しました",
+      buttons: ["OK"],
+    });
+  });
+}

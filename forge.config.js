@@ -9,7 +9,9 @@ module.exports = {
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
-      config: {},
+      config: {
+        name: "electron_publish"
+      },
     },
     {
       name: '@electron-forge/maker-zip',
@@ -27,6 +29,7 @@ module.exports = {
   publishers: [
     {
       name: '@electron-forge/publisher-github',
+      platforms: ['win32'],
       config: {
         repository: {
           owner: 'saica1101',
