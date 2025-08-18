@@ -3,6 +3,7 @@
 # Dependencies
 node_modules/
 screenshots/README.md
+valorant-mouse-sensitivity-utility-*/
 
 # Build output
 out/

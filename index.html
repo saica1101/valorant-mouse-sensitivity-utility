@@ -241,6 +241,57 @@
         [data-theme="dark"] .range-display {
             color: #999;
         }
+
+        /* 三分探索用スタイル */
+        .ternary-comparison {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .candidate-option {
+            text-align: center;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            min-width: 150px;
+        }
+
+        .candidate-label {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .candidate-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--button-bg);
+            margin-bottom: 12px;
+        }
+
+        .btn-candidate {
+            background: var(--button-bg);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-candidate:hover {
+            background: var(--button-hover);
+        }
+
+        .btn-equal {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+        }
+
+        .btn-equal:hover {
+            background: #5a6268;
+        }
     </style>
 </head>
 <body>
@@ -251,7 +302,7 @@
             <h1>🎯 VMSU</h1>
             <p>最適なマウス感度を見つけましょう</p>
             <div class="version-info">
-                <span id="version">v1.2.0</span>
+                <span id="version">v1.3.0</span>
             </div>
         </div>
 
@@ -276,20 +327,27 @@
 
         <div id="adjustmentPhase" class="hidden">
             <div class="step">
-                <h3>感度調整</h3>
-                <div class="result-display" id="currentSensitivity">
-                    現在の感度: <span id="sensitivityValue">0</span>
-                </div>
+                <h3>感度調整（三分探索）</h3>
                 <div class="range-display" id="rangeDisplay">
                     調整範囲: <span id="lowerBound">0</span> ～ <span id="upperBound">0</span>
                 </div>
                 <p style="text-align: center; margin: 15px 0;">
-                    この感度でゲームを試して、感想を教えてください：
+                    以下の2つの感度を試して、どちらが快適か選んでください：
                 </p>
-                <div class="control-buttons">
-                    <button class="btn btn-fast" id="tooFastBtn">🏃‍♂️ 高い</button>
-                    <button class="btn btn-just" id="justRightBtn">👌 OK</button>
-                    <button class="btn btn-slow" id="tooSlowBtn">🐌 低い</button>
+                <div class="ternary-comparison">
+                    <div class="candidate-option">
+                        <div class="candidate-label">候補A</div>
+                        <div class="candidate-value" id="leftCandidate">0</div>
+                        <button class="btn btn-candidate" id="leftBtn">👈 Aが快適</button>
+                    </div>
+                    <div class="candidate-option">
+                        <div class="candidate-label">候補B</div>
+                        <div class="candidate-value" id="rightCandidate">0</div>
+                        <button class="btn btn-candidate" id="rightBtn">� Bが快適</button>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="btn btn-equal" id="equalBtn">� どちらも同じ</button>
                 </div>
             </div>
         </div>
@@ -313,7 +371,8 @@
                 this.inputDPI = 0;
                 this.lowerBound = 0;
                 this.upperBound = 0;
-                this.middleBound = 0;
+                this.leftThird = 0;  // 三分探索の左側候補
+                this.rightThird = 0; // 三分探索の右側候補
                 
                 this.initializeElements();
                 this.bindEvents();
@@ -325,9 +384,9 @@
                 this.dpiInput = document.getElementById('dpiInput');
                 this.dpiButtons = document.querySelectorAll('.dpi-btn');
                 this.startBtn = document.getElementById('startBtn');
-                this.tooFastBtn = document.getElementById('tooFastBtn');
-                this.justRightBtn = document.getElementById('justRightBtn');
-                this.tooSlowBtn = document.getElementById('tooSlowBtn');
+                this.leftBtn = document.getElementById('leftBtn');
+                this.rightBtn = document.getElementById('rightBtn');
+                this.equalBtn = document.getElementById('equalBtn');
                 this.resetBtn = document.getElementById('resetBtn');
                 this.themeToggle = document.getElementById('themeToggle');
                 this.versionElement = document.getElementById('version');
@@ -336,7 +395,8 @@
                 this.adjustmentPhase = document.getElementById('adjustmentPhase');
                 this.finishPhase = document.getElementById('finishPhase');
                 
-                this.sensitivityValue = document.getElementById('sensitivityValue');
+                this.leftCandidate = document.getElementById('leftCandidate');
+                this.rightCandidate = document.getElementById('rightCandidate');
                 this.finalSensitivity = document.getElementById('finalSensitivity');
                 this.lowerBoundDisplay = document.getElementById('lowerBound');
                 this.upperBoundDisplay = document.getElementById('upperBound');
@@ -352,9 +412,9 @@
                 });
 
                 this.startBtn.addEventListener('click', () => this.startAdjustment());
-                this.tooFastBtn.addEventListener('click', () => this.adjustSensitivity('fast'));
-                this.justRightBtn.addEventListener('click', () => this.showFinishPhase());
-                this.tooSlowBtn.addEventListener('click', () => this.adjustSensitivity('slow'));
+                this.leftBtn.addEventListener('click', () => this.ternaryChoice('left'));
+                this.rightBtn.addEventListener('click', () => this.ternaryChoice('right'));
+                this.equalBtn.addEventListener('click', () => this.ternaryChoice('equal'));
                 this.resetBtn.addEventListener('click', () => this.reset());
                 this.themeToggle.addEventListener('click', () => this.toggleTheme());
             }
@@ -395,25 +455,38 @@
                 // 仕様に基づく計算
                 this.lowerBound = this.baseSensi / this.inputDPI;
                 this.upperBound = this.lowerBound * 8;
-                this.middleBound = (this.lowerBound + this.upperBound) / 2;
+                
+                // 三分探索の初期化
+                this.calculateTernaryPoints();
 
                 this.showAdjustmentPhase();
                 this.updateDisplay();
             }
 
-            adjustSensitivity(type) {
-                if (type === 'fast') {
-                    // 早すぎる場合：upper-boundをmiddle-boundと同値にする
-                    this.upperBound = this.middleBound;
-                } else if (type === 'slow') {
-                    // 遅すぎる場合：lower-boundをmiddle-boundと同値にする
-                    this.lowerBound = this.middleBound;
+            calculateTernaryPoints() {
+                // 三分探索: 範囲を3つに分割して、1/3と2/3の位置を計算
+                const range = this.upperBound - this.lowerBound;
+                this.leftThird = this.lowerBound + range / 3;
+                this.rightThird = this.lowerBound + (2 * range) / 3;
+            }
+
+            ternaryChoice(choice) {
+                if (choice === 'left') {
+                    // 左側（小さい値）が好まれる場合：右境界を左候補に移動
+                    this.upperBound = this.rightThird;
+                } else if (choice === 'right') {
+                    // 右側（大きい値）が好まれる場合：左境界を右候補に移動
+                    this.lowerBound = this.leftThird;
+                } else if (choice === 'equal') {
+                    // 同じ場合：中間範囲のみを残す（両端を狭める）
+                    this.lowerBound = this.leftThird;
+                    this.upperBound = this.rightThird;
                 }
 
-                // 新しいmiddle-boundを計算
-                this.middleBound = (this.lowerBound + this.upperBound) / 2;
+                // 新しい三分点を計算
+                this.calculateTernaryPoints();
 
-                // 差がほぼなくなったら終了
+                // 収束判定：範囲が十分小さくなったら終了
                 if (Math.abs(this.upperBound - this.lowerBound) < 0.001) {
                     this.showFinishPhase();
                 } else {
@@ -422,7 +495,8 @@
             }
 
             updateDisplay() {
-                this.sensitivityValue.textContent = this.middleBound.toFixed(3);
+                this.leftCandidate.textContent = this.leftThird.toFixed(3);
+                this.rightCandidate.textContent = this.rightThird.toFixed(3);
                 this.lowerBoundDisplay.textContent = this.lowerBound.toFixed(3);
                 this.upperBoundDisplay.textContent = this.upperBound.toFixed(3);
             }
@@ -437,7 +511,9 @@
                 this.setupPhase.classList.add('hidden');
                 this.adjustmentPhase.classList.add('hidden');
                 this.finishPhase.classList.remove('hidden');
-                this.finalSensitivity.textContent = this.middleBound.toFixed(3);
+                // 最終感度は範囲の中央値
+                const finalValue = (this.lowerBound + this.upperBound) / 2;
+                this.finalSensitivity.textContent = finalValue.toFixed(3);
             }
 
             reset() {
@@ -451,7 +527,8 @@
                 this.inputDPI = 0;
                 this.lowerBound = 0;
                 this.upperBound = 0;
-                this.middleBound = 0;
+                this.leftThird = 0;
+                this.rightThird = 0;
             }
 
             async loadAppVersion() {
