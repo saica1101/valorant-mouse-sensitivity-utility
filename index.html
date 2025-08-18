@@ -196,6 +196,15 @@
             background: #c82333;
         }
 
+        .btn-just {
+            background: #FF983f;
+            color: white;
+        }
+
+        .btn-just:hover {
+            background: #FF6600;
+        }
+
         .btn-slow {
             background: #28a745;
             color: white;
@@ -278,8 +287,9 @@
                     この感度でゲームを試して、感想を教えてください：
                 </p>
                 <div class="control-buttons">
-                    <button class="btn btn-fast" id="tooFastBtn">🏃‍♂️ 早すぎる</button>
-                    <button class="btn btn-slow" id="tooSlowBtn">🐌 遅すぎる</button>
+                    <button class="btn btn-fast" id="tooFastBtn">🏃‍♂️ 高い</button>
+                    <button class="btn btn-just" id="justRightBtn">👌 OK</button>
+                    <button class="btn btn-slow" id="tooSlowBtn">🐌 低い</button>
                 </div>
             </div>
         </div>
@@ -316,6 +326,7 @@
                 this.dpiButtons = document.querySelectorAll('.dpi-btn');
                 this.startBtn = document.getElementById('startBtn');
                 this.tooFastBtn = document.getElementById('tooFastBtn');
+                this.justRightBtn = document.getElementById('justRightBtn');
                 this.tooSlowBtn = document.getElementById('tooSlowBtn');
                 this.resetBtn = document.getElementById('resetBtn');
                 this.themeToggle = document.getElementById('themeToggle');
@@ -342,6 +353,7 @@
 
                 this.startBtn.addEventListener('click', () => this.startAdjustment());
                 this.tooFastBtn.addEventListener('click', () => this.adjustSensitivity('fast'));
+                this.justRightBtn.addEventListener('click', () => this.showFinishPhase());
                 this.tooSlowBtn.addEventListener('click', () => this.adjustSensitivity('slow'));
                 this.resetBtn.addEventListener('click', () => this.reset());
                 this.themeToggle.addEventListener('click', () => this.toggleTheme());
