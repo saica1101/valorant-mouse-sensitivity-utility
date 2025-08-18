@@ -61,6 +61,20 @@
             margin-bottom: 10px;
         }
 
+        .version-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .version-info #version {
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
         .theme-toggle {
             position: absolute;
             top: 20px;
@@ -227,6 +241,9 @@
         <div class="header">
             <h1>🎯 VMSU</h1>
             <p>最適なマウス感度を見つけましょう</p>
+            <div class="version-info">
+                <span id="version">v1.0.0</span>
+            </div>
         </div>
 
         <div id="setupPhase">
@@ -291,6 +308,7 @@
                 this.initializeElements();
                 this.bindEvents();
                 this.initializeTheme();
+                this.loadAppVersion();
             }
 
             initializeElements() {
@@ -301,6 +319,7 @@
                 this.tooSlowBtn = document.getElementById('tooSlowBtn');
                 this.resetBtn = document.getElementById('resetBtn');
                 this.themeToggle = document.getElementById('themeToggle');
+                this.versionElement = document.getElementById('version');
                 
                 this.setupPhase = document.getElementById('setupPhase');
                 this.adjustmentPhase = document.getElementById('adjustmentPhase');
@@ -422,6 +441,18 @@
                 this.upperBound = 0;
                 this.middleBound = 0;
             }
+
+            async loadAppVersion() {
+                try {
+                    if (window.electronAPI && window.electronAPI.getAppVersion) {
+                        const version = await window.electronAPI.getAppVersion();
+                        this.versionElement.textContent = `v${version}`;
+                    }
+                } catch (error) {
+                    console.error('Failed to load app version:', error);
+                }
+            }
+
         }
 
         // アプリケーション開始

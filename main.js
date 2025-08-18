@@ -1,12 +1,16 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
+const { updateElectronApp } = require('update-electron-app');
 const path = require('path');
+
+// 自動アップデート設定
+updateElectronApp();
 
 let mainWindow;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
     width: 540,
-    height: 615,
+    height: 650,
     resizable: false,
     webPreferences: {
       nodeIntegration: false,
@@ -49,4 +53,8 @@ app.on('activate', () => {
 // テーマ切り替えのIPC通信
 ipcMain.handle('get-theme', () => {
   return 'light'; // デフォルトはライトテーマ
+});
+
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
 });
