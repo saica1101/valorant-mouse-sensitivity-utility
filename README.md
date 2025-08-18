@@ -30,7 +30,7 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 ### 前提条件
 
 #### 実行可能アプリケーションをダウンロードする
-[VMSU.exeのダウンロード](url)
+[VMSU.exeのダウンロード](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)
 
 #### リポジトリをクローンする
 - Node.js (v16以上)
