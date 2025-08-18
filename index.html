@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valorant Mouse Sensitivity Utility</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #ddd;
+            --button-bg: #007acc;
+            --button-hover: #005999;
+            --input-bg: #ffffff;
+            --card-bg: #f9f9f9;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1e1e1e;
+            --text-color: #ffffff;
+            --border-color: #444;
+            --button-bg: #0078d4;
+            --button-hover: #106ebe;
+            --input-bg: #2d2d2d;
+            --card-bg: #252525;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: var(--text-color);
+            margin-bottom: 10px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 8px 16px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--button-bg);
+            color: white;
+            border-color: var(--button-bg);
+        }
+
+        .step {
+            margin-bottom: 25px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-color);
+        }
+
+        .step h3 {
+            margin-bottom: 15px;
+            color: var(--button-bg);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .dpi-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .dpi-btn {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--input-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dpi-btn:hover, .dpi-btn.active {
+            background: var(--button-bg);
+            color: white;
+            border-color: var(--button-bg);
+        }
+
+        .result-display {
+            text-align: center;
+            padding: 20px;
+            background: var(--button-bg);
+            color: white;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: var(--button-bg);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--button-hover);
+        }
+
+        .btn-fast {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-fast:hover {
+            background: #c82333;
+        }
+
+        .btn-slow {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-slow:hover {
+            background: #218838;
+        }
+
+        .finish-message {
+            text-align: center;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            border: 2px solid var(--button-bg);
+        }
+
+        .finish-message h2 {
+            color: var(--button-bg);
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .range-display {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        [data-theme="dark"] .range-display {
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌙 ダークモード</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎯 VMSU</h1>
+            <p>最適なマウス感度を見つけましょう</p>
+        </div>
+
+        <div id="setupPhase">
+            <div class="step">
+                <h3>Step 1: マウスDPIを入力または選択</h3>
+                <div class="input-group">
+                    <label for="dpiInput">DPI値を入力:</label>
+                    <input type="number" id="dpiInput" placeholder="例: 800" min="1" max="10000">
+                </div>
+                <div class="dpi-buttons">
+                    <button class="dpi-btn" data-dpi="400">400</button>
+                    <button class="dpi-btn" data-dpi="800">800</button>
+                    <button class="dpi-btn" data-dpi="1600">1600</button>
+                    <button class="dpi-btn" data-dpi="3200">3200</button>
+                </div>
+                <button class="btn btn-primary" id="startBtn" style="width: 100%; margin-top: 20px;">
+                    感度調整を開始
+                </button>
+            </div>
+        </div>
+
+        <div id="adjustmentPhase" class="hidden">
+            <div class="step">
+                <h3>感度調整</h3>
+                <div class="result-display" id="currentSensitivity">
+                    現在の感度: <span id="sensitivityValue">0</span>
+                </div>
+                <div class="range-display" id="rangeDisplay">
+                    調整範囲: <span id="lowerBound">0</span> ～ <span id="upperBound">0</span>
+                </div>
+                <p style="text-align: center; margin: 15px 0;">
+                    この感度でゲームを試して、感想を教えてください：
+                </p>
+                <div class="control-buttons">
+                    <button class="btn btn-fast" id="tooFastBtn">🏃‍♂️ 早すぎる</button>
+                    <button class="btn btn-slow" id="tooSlowBtn">🐌 遅すぎる</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="finishPhase" class="hidden">
+            <div class="finish-message">
+                <h2>🎉 Finish!</h2>
+                <p>最適な感度が見つかりました！</p>
+                <div class="result-display" style="margin: 20px 0;">
+                    最終感度: <span id="finalSensitivity">0</span>
+                </div>
+                <button class="btn btn-primary" id="resetBtn">🔄 Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MouseSensitivityUtility {
+            constructor() {
+                this.baseSensi = 80;
+                this.inputDPI = 0;
+                this.lowerBound = 0;
+                this.upperBound = 0;
+                this.middleBound = 0;
+                
+                this.initializeElements();
+                this.bindEvents();
+                this.initializeTheme();
+            }
+
+            initializeElements() {
+                this.dpiInput = document.getElementById('dpiInput');
+                this.dpiButtons = document.querySelectorAll('.dpi-btn');
+                this.startBtn = document.getElementById('startBtn');
+                this.tooFastBtn = document.getElementById('tooFastBtn');
+                this.tooSlowBtn = document.getElementById('tooSlowBtn');
+                this.resetBtn = document.getElementById('resetBtn');
+                this.themeToggle = document.getElementById('themeToggle');
+                
+                this.setupPhase = document.getElementById('setupPhase');
+                this.adjustmentPhase = document.getElementById('adjustmentPhase');
+                this.finishPhase = document.getElementById('finishPhase');
+                
+                this.sensitivityValue = document.getElementById('sensitivityValue');
+                this.finalSensitivity = document.getElementById('finalSensitivity');
+                this.lowerBoundDisplay = document.getElementById('lowerBound');
+                this.upperBoundDisplay = document.getElementById('upperBound');
+            }
+
+            bindEvents() {
+                this.dpiButtons.forEach(btn => {
+                    btn.addEventListener('click', () => this.selectDPI(btn));
+                });
+
+                this.dpiInput.addEventListener('input', () => {
+                    this.dpiButtons.forEach(btn => btn.classList.remove('active'));
+                });
+
+                this.startBtn.addEventListener('click', () => this.startAdjustment());
+                this.tooFastBtn.addEventListener('click', () => this.adjustSensitivity('fast'));
+                this.tooSlowBtn.addEventListener('click', () => this.adjustSensitivity('slow'));
+                this.resetBtn.addEventListener('click', () => this.reset());
+                this.themeToggle.addEventListener('click', () => this.toggleTheme());
+            }
+
+            initializeTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                this.setTheme(savedTheme);
+            }
+
+            toggleTheme() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                this.setTheme(newTheme);
+            }
+
+            setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                this.themeToggle.textContent = theme === 'dark' ? '☀️ ライトモード' : '🌙 ダークモード';
+            }
+
+            selectDPI(button) {
+                this.dpiButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                this.dpiInput.value = button.dataset.dpi;
+            }
+
+            startAdjustment() {
+                const dpiValue = parseInt(this.dpiInput.value);
+                
+                if (!dpiValue || dpiValue <= 0) {
+                    alert('正しいDPI値を入力してください。');
+                    return;
+                }
+
+                this.inputDPI = dpiValue;
+                
+                // 仕様に基づく計算
+                this.lowerBound = this.baseSensi / this.inputDPI;
+                this.upperBound = this.lowerBound * 8;
+                this.middleBound = (this.lowerBound + this.upperBound) / 2;
+
+                this.showAdjustmentPhase();
+                this.updateDisplay();
+            }
+
+            adjustSensitivity(type) {
+                if (type === 'fast') {
+                    // 早すぎる場合：upper-boundをmiddle-boundと同値にする
+                    this.upperBound = this.middleBound;
+                } else if (type === 'slow') {
+                    // 遅すぎる場合：lower-boundをmiddle-boundと同値にする
+                    this.lowerBound = this.middleBound;
+                }
+
+                // 新しいmiddle-boundを計算
+                this.middleBound = (this.lowerBound + this.upperBound) / 2;
+
+                // 差がほぼなくなったら終了
+                if (Math.abs(this.upperBound - this.lowerBound) < 0.001) {
+                    this.showFinishPhase();
+                } else {
+                    this.updateDisplay();
+                }
+            }
+
+            updateDisplay() {
+                this.sensitivityValue.textContent = this.middleBound.toFixed(3);
+                this.lowerBoundDisplay.textContent = this.lowerBound.toFixed(3);
+                this.upperBoundDisplay.textContent = this.upperBound.toFixed(3);
+            }
+
+            showAdjustmentPhase() {
+                this.setupPhase.classList.add('hidden');
+                this.adjustmentPhase.classList.remove('hidden');
+                this.finishPhase.classList.add('hidden');
+            }
+
+            showFinishPhase() {
+                this.setupPhase.classList.add('hidden');
+                this.adjustmentPhase.classList.add('hidden');
+                this.finishPhase.classList.remove('hidden');
+                this.finalSensitivity.textContent = this.middleBound.toFixed(3);
+            }
+
+            reset() {
+                this.setupPhase.classList.remove('hidden');
+                this.adjustmentPhase.classList.add('hidden');
+                this.finishPhase.classList.add('hidden');
+                
+                this.dpiInput.value = '';
+                this.dpiButtons.forEach(btn => btn.classList.remove('active'));
+                
+                this.inputDPI = 0;
+                this.lowerBound = 0;
+                this.upperBound = 0;
+                this.middleBound = 0;
+            }
+        }
+
+        // アプリケーション開始
+        document.addEventListener('DOMContentLoaded', () => {
+            new MouseSensitivityUtility();
+        });
+    </script>
+</body>
+</html>
