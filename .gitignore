@@ -1,5 +1,8 @@
+.gitignore
+
 # Dependencies
 node_modules/
+screenshots/README.md
 
 # Build output
 out/
