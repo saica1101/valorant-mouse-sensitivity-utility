@@ -29,52 +29,11 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 
 ## 🚀 クイックスタート
 
-### 実行可能アプリケーションをダウンロードする
+### ダウンロード
 [クライアントのダウンロード](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)  
-※初めて利用される方はReleaseにある最新バージョンの**valorant-mouse-sensitivity-utility-v?.?.?-client.zip**をダウンロードしてください。
-
-
-### リポジトリをクローンする
-#### 前提条件
-- Node.js (v16以上)
-- npm または yarn
-
-### インストール
-
-1. リポジトリをクローン:
-```bash
-git clone https://github.com/yourusername/valorant-mouse-sensitivity-utility.git
-cd valorant-mouse-sensitivity-utility
-```
-
-2. 依存関係をインストール:
-```bash
-npm install
-```
-
-3. アプリケーションを起動:
-```bash
-npm start
-```
-
-## 📦 ビルド・配布
-
-### 開発環境で実行
-```bash
-npm start
-```
-
-### パッケージ化
-```bash
-npm run package
-```
-
-### インストーラー作成
-```bash
-npm run make
-```
-
-ビルドされたファイルは `out` フォルダに生成されます。
+※初めて利用される方はReleaseにある最新バージョンの  
+`valorant-mouse-sensitivity-utility-v*.*.*-client.zip`  
+をダウンロードしてください。
 
 ## 🎯 使用方法
 
