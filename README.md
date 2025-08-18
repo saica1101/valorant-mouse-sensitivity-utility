@@ -4,7 +4,7 @@
 [![Electron](https://img.shields.io/badge/Electron-37.3.0-47848F?logo=electron)](https://www.electronjs.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/electron/electron)
 
-Valorantプレイヤー向けの最適なマウス感度を見つけるためのElectronアプリケーションです。二分探索アルゴリズムを使用して、効率的にあなたにぴったりの感度設定を発見できます。
+Valorantプレイヤー向けの最適なマウス感度を見つけるためのElectronアプリケーションです。三分探索アルゴリズムを使用して、効率的にあなたにぴったりの感度設定を発見できます。
 
 ## 📸 スクリーンショット
 > NOTE: 画像は開発中の物であり実際の物とは異なる場合があります。
@@ -20,7 +20,7 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 
 ## ✨ 機能
 
-- 🔍 **効率的な感度探索**: 二分探索アルゴリズムによる最適化された感度調整
+- 🔍 **効率的な感度探索**: 三分探索アルゴリズムによる最適化された感度調整
 - 🖱️ **DPI対応**: 400, 800, 1600, 3200の一般的なDPI値 + カスタム入力
 - 🌙 **テーマ切り替え**: ライトモード・ダークモード対応
 - 💾 **設定保存**: テーマ設定の自動保存
