@@ -1,9 +1,16 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
-const { updateElectronApp } = require('update-electron-app');
+const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
 const path = require('path');
 
 // 自動アップデート設定
-updateElectronApp();
+updateElectronApp({
+  updateSource: {
+    type: UpdateSourceType.ElectronPublicUpdateService,
+    repo: 'saica1101/valorant-mouse-sensitivity-utility'
+  },
+  updateInterval: "1 hour",
+  logger: require("electron-log")
+});
 
 let mainWindow;
 
