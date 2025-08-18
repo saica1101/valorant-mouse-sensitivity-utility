@@ -30,10 +30,7 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 ## 🚀 クイックスタート
 
 ### ダウンロード
-[クライアントのダウンロード](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)  
-※初めて利用される方はReleaseにある最新バージョンの  
-`valorant-mouse-sensitivity-utility-v*.*.*-client.zip`  
-をダウンロードしてください。
+[クライアントのダウンロード](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)
 
 ## 🎯 使用方法
 
