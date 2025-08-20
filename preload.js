@@ -57,14 +57,17 @@ contextBridge.exposeInMainWorld('electronAPI', {
     getSystemLocale: () => ipcRenderer.invoke('get-system-locale'),
     getLanguage: () => ipcRenderer.invoke('get-language'),
     setLanguage: (language) => ipcRenderer.invoke('set-language', language),
-    onLanguageChanged: (callback) => ipcRenderer.on('language-changed', callback),
+    onLanguageChanged: (callback) => ipcRenderer.on('language-changed', (event, language) => callback(language)),
+    removeLanguageListener: (callback) => ipcRenderer.removeListener('language-changed', callback),
     getAlgorithm: () => ipcRenderer.invoke('get-algorithm'),
     setAlgorithm: (algorithm) => ipcRenderer.invoke('set-algorithm', algorithm),
-    onAlgorithmChanged: (callback) => ipcRenderer.on('algorithm-changed', callback),
+    onAlgorithmChanged: (callback) => ipcRenderer.on('algorithm-changed', (event, algorithm) => callback(algorithm)),
     lockAlgorithmSelection: () => ipcRenderer.invoke('lock-algorithm-selection'),
     unlockAlgorithmSelection: () => ipcRenderer.invoke('unlock-algorithm-selection'),
     getEnvironmentInfo: () => ipcRenderer.invoke('get-environment-info'),
-    loadScriptContent: (scriptPath) => ipcRenderer.invoke('load-script-content', scriptPath)
+    loadScriptContent: (scriptPath) => ipcRenderer.invoke('load-script-content', scriptPath),
+    loadSettings: () => ipcRenderer.invoke('load-settings'),
+    saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings)
 });
 
 // ScriptLoaderを公開

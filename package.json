@@ -4,14 +4,17 @@
   "description": "Mouse Sensitivity Utility for Valorant with multi-language support and accessibility features",
   "main": "main.js",
   "scripts": {
-    "start": "npm run build:ts && electron-forge start",
+    "start": "npm run build:ts && npm run build:react && electron-forge start",
     "build:ts": "tsc || echo 'TypeScript compilation completed with errors, continuing...'",
+    "build:react": "webpack --mode=development",
+    "build:react:prod": "webpack --mode=production",
     "build:watch": "tsc --watch",
-    "dev": "npm run build:ts && electron-forge start",
+    "dev": "npm run build:ts && npm run build:react && electron-forge start",
+    "dev:react": "webpack serve --mode=development",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "npm run build:ts && electron-forge package",
-    "make": "npm run build:ts && electron-forge make",
-    "publish": "npm run build:ts && electron-forge publish",
+    "package": "npm run build:ts && npm run build:react:prod && electron-forge package",
+    "make": "npm run build:ts && npm run build:react:prod && electron-forge make",
+    "publish": "npm run build:ts && npm run build:react:prod && electron-forge publish",
     "type-check": "tsc --noEmit"
   },
   "repository": {
@@ -30,6 +33,9 @@
   "dependencies": {
     "electron-log": "^5.4.3",
     "electron-squirrel-startup": "^1.0.1",
+    "electron-updater": "^6.6.2",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
     "update-electron-app": "^3.1.1"
   },
   "devDependencies": {
@@ -44,8 +50,17 @@
     "@electron/fuses": "^1.8.0",
     "@types/electron": "^1.6.12",
     "@types/node": "^20.19.11",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "css-loader": "^7.1.2",
     "electron": "37.3.0",
+    "html-webpack-plugin": "^5.6.4",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.2"
   }
 }

@@ -1,5 +1,4 @@
-const { app, BrowserWindow, ipcMain, Menu } = require('electron');
-const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
+const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -8,16 +7,6 @@ console.log(`📁 App path: ${app.getAppPath()}`);
 console.log(`📂 Current working directory: ${process.cwd()}`);
 
 let mainWindow = null;
-
-// 自動アップデート設定
-updateElectronApp({
-  updateSource: {
-    type: UpdateSourceType.ElectronPublicUpdateService,
-    repo: 'saica1101/valorant-mouse-sensitivity-utility'
-  },
-  updateInterval: "1 hour",
-  logger: require("electron-log")
-});
 
 // 設定ファイルのパス
 const settingsPath = path.join(app.getPath('userData'), 'settings.json');
@@ -129,34 +118,6 @@ function createMenuTemplate() {
             }
           ]
         },
-        { type: 'separator' },
-        {
-          label: isJapanese ? 'アルゴリズム' : 'Algorithm',
-          submenu: [
-            {
-              label: isJapanese ? '三分探索PSAメソッド' : 'Ternary search PSA method',
-              type: 'radio',
-              checked: currentAlgorithm === 'ternary',
-              enabled: !isAlgorithmLocked,
-              click: () => {
-                if (!isAlgorithmLocked) {
-                  setAlgorithm('ternary');
-                }
-              }
-            },
-            {
-              label: isJapanese ? 'ナチュラルPSAメソッド' : 'Natural PSA method',
-              type: 'radio',
-              checked: currentAlgorithm === 'natural',
-              enabled: !isAlgorithmLocked,
-              click: () => {
-                if (!isAlgorithmLocked) {
-                  setAlgorithm('natural');
-                }
-              }
-            }
-          ]
-        }
       ]
     }
   ];
@@ -246,7 +207,20 @@ function createWindow() {
   });
 
   console.log('⚡ Loading index.html...');
-  mainWindow.loadFile('index.html');
+  // React アプリケーションの読み込み
+  if (app.isPackaged) {
+    // パッケージ版では dist/index.html を読み込み
+    mainWindow.loadFile(path.join(__dirname, 'dist', 'index.html'));
+  } else {
+    // 開発版では dist/index.html を読み込み（Webpack でビルドされたもの）
+    const distPath = path.join(__dirname, 'dist', 'index.html');
+    if (fs.existsSync(distPath)) {
+      mainWindow.loadFile(distPath);
+    } else {
+      // フォールバック: 従来の index.html
+      mainWindow.loadFile('index.html');
+    }
+  }
 
   mainWindow.once('ready-to-show', () => {
     console.log('✅ Window ready to show');
@@ -409,6 +383,26 @@ ipcMain.handle('load-script-content', async (event, scriptPath) => {
     }
   } catch (error) {
     console.error(`❌ Error loading script ${scriptPath}:`, error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Settings管理のIPCハンドラ
+ipcMain.handle('load-settings', async () => {
+  try {
+    return loadSettings();
+  } catch (error) {
+    console.error('❌ Error loading settings:', error);
+    return defaultSettings;
+  }
+});
+
+ipcMain.handle('save-settings', async (event, newSettings) => {
+  try {
+    saveSettings(newSettings);
+    return { success: true };
+  } catch (error) {
+    console.error('❌ Error saving settings:', error);
     return { success: false, error: error.message };
   }
 });

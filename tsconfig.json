@@ -25,7 +25,7 @@
     "emitDecoratorMetadata": true,
     "allowJs": true,
     "checkJs": false,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "baseUrl": "./",
     "paths": {
       "@/*": ["./scripts/*"],

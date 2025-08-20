@@ -5,6 +5,8 @@
 
 // ===== Core Interfaces =====
 
+import { app, BrowserWindow, autoUpdater, dialog } from 'electron'
+
 /**
  * 設定オブジェクトの型定義
  */
@@ -175,6 +177,40 @@ export interface IAccessibilityManager extends IBaseManager {
 // ===== Data Types =====
 
 /**
+ * アルゴリズム情報
+ */
+export interface AlgorithmInfo {
+  type: AlgorithmType;
+  name: string;
+  description: string;
+}
+
+/**
+ * アプリケーション状態
+ */
+export interface AppState {
+  currentPhase: UIPhase;
+  dpi: number;
+  algorithm: AlgorithmType;
+  searchRange: {
+    lower: number;
+    upper: number;
+  };
+  iterations: number;
+  currentSensitivity?: number;
+}
+
+/**
+ * 通知データ
+ */
+export interface NotificationData {
+  id: string;
+  type: NotificationType;
+  message: string;
+  duration?: number;
+}
+
+/**
  * 通知オプション
  */
 export interface NotificationOptions {
@@ -323,4 +359,49 @@ declare global {
     AlgorithmManager: IAlgorithmManager;
     AccessibilityManager: IAccessibilityManager;
   }
+}
+
+const server = 'https://update.electronjs.org';
+const feed = `${server}/saica1101/valorant-mouse-sensitivity-utility/${process.platform}-${process.arch}/${app.getVersion()}`;
+
+if (app.isPackaged) {
+  autoUpdater.setFeedURL({
+    url: feed,
+  });
+  autoUpdater.checkForUpdates();
+
+  autoUpdater.on("update-downloaded", async () => {
+    const returnValue = await dialog.showMessageBox({
+      message: "アップデートあり",
+      detail: "再起動してインストールできます",
+      buttons: ["再起動", "後で"],
+    });
+    if (returnValue.response === 0) {
+      autoUpdater.quitAndInstall();
+    }
+  });
+
+  // アップデートがある
+  autoUpdater.on("update-available", () => {
+    dialog.showMessageBox({
+      message: "アップデートがあります",
+      buttons: ["OK"],
+    });
+  });
+
+  // アップデートがない
+  autoUpdater.on("update-not-available", () => {
+    dialog.showMessageBox({
+      message: "アップデートはありません",
+      buttons: ["OK"],
+    });
+  });
+
+  // Error
+  autoUpdater.on("error", () => {
+    dialog.showMessageBox({
+      message: "アップデートエラーが発生しました",
+      buttons: ["OK"],
+    });
+  });
 }

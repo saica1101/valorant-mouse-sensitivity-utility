@@ -1,10 +1,15 @@
 .gitignore
+.vscode
+.git
 
 # Dependencies
 node_modules/
 screenshots/README.md
 valorant-mouse-sensitivity-utility-*/
-./scripts/app-legacy.js
+/legacy
+/legacy/*.*
+/out
+/out/*.*
 
 # Build output
 out/

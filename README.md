@@ -2,13 +2,16 @@
 
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 [![Electron](https://img.shields.io/badge/Electron-37.3.0-47848F?logo=electron)](https://www.electronjs.org/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/electron/electron)
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react)](https://reactjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9.2-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Platform](https://img.shields.io/badge/Platform-Windows-blue
+)](https://github.com/electron/electron)
 [![Version](https://img.shields.io/badge/Version-1.4.0-brightgreen)](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)
-[![Code Quality](https://img.shields.io/badge/Code%20Quality-Refactored-success)](https://github.com/saica1101/valorant-mouse-sensitivity-utility)
+[![Code Quality](https://img.shields.io/badge/Code%20Quality-Modern%20React-success)](https://github.com/saica1101/valorant-mouse-sensitivity-utility)
 
 Valorantプレイヤー向けの最適なマウス感度を見つけるためのElectronアプリケーションです。**三分探索アルゴリズム**と**Natural PSA（Practical Sensitivity Algorithm）**の2つの手法を使用して、効率的にあなたにぴったりの感度設定を発見できます。
 
-**v1.4.0では大規模なリファクタリングを実施し、より保守しやすく拡張しやすいアーキテクチャに生まれ変わりました。**
+**v1.4.0では完全なReact + TypeScript移行を実施し、モダンで保守しやすいアーキテクチャに生まれ変わりました。**
 
 ## 🌐 多言語対応
 
@@ -42,7 +45,9 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 - 🎯 **パフォーマンス最適化**: 軽量でスムーズな動作
 - ✅ **リアルタイムバリデーション**: 入力値の即座な検証とエラー表示
 - 📱 **レスポンシブデザイン**: 様々な画面サイズに対応
-- 🔧 **モジュラー設計**: 保守しやすい機能分割アーキテクチャ
+- 🎨 **美しいアニメーション**: GPU加速された滑らかな通知とトランジション
+- ⚡ **React 18**: 最新のReact機能とパフォーマンス最適化
+- 🛡️ **型安全性**: 完全なTypeScript実装による堅牢なコード
 
 ## 🚀 クイックスタート
 
@@ -53,12 +58,13 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 
 ### 初期設定
 1. **言語選択**: メニューから日本語または英語を選択
-2. **アルゴリズム選択**: メニューから使用する感度調整手法を選択
-   - **三分探索**: 数学的に効率的な探索手法
-   - **Natural PSA**: より自然で直感的な調整手法
+2. **テーマ選択**: ライトモード・ダークモードを切り替え可能
 
-### Step 1: DPI設定
+### Step 1: DPI設定とアルゴリズム選択
 - マウスのDPI値を入力するか、プリセット値（400, 800, 1600, 3200）から選択
+- 使用するアルゴリズムを選択:
+  - **三分探索**: 数学的に効率的な探索手法
+  - **Natural PSA**: より自然で直感的な調整手法
 - 「感度調整を開始」をクリック
 
 ### Step 2: 感度調整
@@ -82,14 +88,15 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 4. 7回の反復で段階的に最適値に収束します
 
 ### Step 3: 完了
-- 最適な感度が見つかると「Finish」メッセージが表示
-- 「Reset」ボタンで新しい調整を開始可能
+- 最適な感度が見つかると「調整完了」メッセージが表示
+- 「感度をコピー」ボタンでクリップボードにコピー
+- 「再調整」ボタンで新しい調整を開始可能
 - 設定は自動的に保存され、次回起動時に復元されます
 
-### 📱 メニュー機能
-- **言語設定**: 日本語 ⇄ English の切り替え
-- **アルゴリズム設定**: 三分探索 ⇄ Natural PSA の切り替え
-- **テーマ設定**: ライトモード ⇄ ダークモード の切り替え
+### 📱 追加機能
+- **リアルタイム通知**: 美しいアニメーション付きの通知システム
+- **アクセシビリティ**: キーボードのみでの操作も可能
+- **自動保存**: すべての設定が自動的に保存・復元
 
 ### 自動アップデート機能
 - アプリ起動時と10分間隔で自動的に新しいバージョンをチェック
@@ -98,6 +105,19 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 - ユーザーの承認後、アプリが自動再起動してアップデートが適用
 
 ### ⚙️ 技術仕様
+
+### 技術スタック
+- **フレームワーク**: Electron 37.3.0
+- **フロントエンド**: React 18.3.1 + TypeScript 5.9.2
+- **バンドラー**: Webpack 5.101.3
+- **ビルドツール**: Electron Forge
+- **UI**: CSS3 with CSS Variables、GPU加速アニメーション
+- **国際化**: カスタムi18nシステム with React Context
+- **状態管理**: React Hooks + Custom Hooks
+- **IPC通信**: Electron IPC for main-renderer communication
+- **設定管理**: JSON-based settings with auto-save/restore
+- **自動アップデート**: update-electron-app + GitHub Releases
+- **型安全性**: 完全なTypeScript実装
 
 ### アルゴリズム詳細
 
@@ -155,137 +175,78 @@ Natural PSAは7回の反復を通じて段階的に最適な感度に収束し�
 - **アーキテクチャ**: モジュラー設計 with Manager pattern + TypeScript型安全性
 - **型定義**: 包括的なTypeScriptインターフェース定義
 
-### 🏗️ アーキテクチャ（v1.4.0 リファクタリング）
+### 🏗️ アーキテクチャ
 
-#### マネージャーベースアーキテクチャ
-v1.4.0では、完全なTypeScript移行と共に、単一の巨大なクラスを以下の責任分離されたマネージャーに分割しました：
-
-```
-📁 scripts/managers/
-├── 📄 BaseManager.ts          # 基底クラス（共通機能、型定義）
-├── 📄 AlgorithmManager.ts     # アルゴリズム管理
-├── 📄 UIManager.ts            # UI状態管理・フェーズ遷移
-├── 📄 ValidationManager.ts    # 入力検証・バリデーション
-├── 📄 NotificationManager.ts  # 通知システム
-├── 📄 AccessibilityManager.ts # アクセシビリティ機能
-├── 📄 PerformanceManager.ts   # パフォーマンス監視
-└── 📄 ServiceContainer.ts     # 依存性注入コンテナ
-
-📁 scripts/
-├── 📄 app.ts                  # メインアプリケーション
-├── 📄 config.ts               # 設定管理
-├── 📄 i18n.ts                 # 国際化システム
-├── 📄 accessibility.ts        # アクセシビリティ初期化
-└── 📄 performance.ts          # パフォーマンス初期化
-
-📁 types/
-└── 📄 index.ts                # TypeScript型定義
-```
-
-#### IPC-Based Script Loading System
-ERR_FILE_NOT_FOUND問題を完全に解決するため、革新的なIPC-basedスクリプト読み込みシステムを実装：
-
-- **動的IPCローディング**: ファイルパスではなくIPCチャンネル経由でスクリプト内容を取得
-- **ASAR対応**: パッケージング後もアーカイブ内リソースに正確にアクセス
-- **依存関係管理**: BaseManagerを最初に読み込み、依存エラーを防止
-- **フォールバック機能**: 複数のパス候補で確実なリソース発見
-- **型安全な通信**: TypeScriptインターフェースによる厳密なIPC型定義
-
-#### 各マネージャーの責任
-
-**🏛️ BaseManager**
-- 共通のエラーハンドリング・ログシステム
-- TypeScript型安全な基底インターフェース
-- イベントリスナー管理
-- ユーティリティ関数（debounce, throttle等）
-
-**🧮 AlgorithmManager**
-- 三分探索・Natural PSAアルゴリズムの実装
-- 型安全なアルゴリズム状態管理
-- メインプロセスとの同期
-- アルゴリズム表示の更新
-
-**🎨 UIManager**
-- フェーズ遷移管理（setup → adjustment → complete）
-- テーマ切り替え・レスポンシブデザイン
-- 要素の表示/非表示制御
-- アニメーション管理
-
-**✅ ValidationManager**
-- リアルタイム入力検証
-- 型安全なカスタムバリデーター
-- エラーメッセージ表示
-- フォームバリデーション
-
-**📢 NotificationManager**
-- 通知の表示・管理・キューイング
-- 自動非表示タイマー
-- アクセシビリティ対応
-- 型安全な通知インターフェース
-
-**♿ AccessibilityManager**
-- キーボードナビゲーション
-- スクリーンリーダー対応
-- ARIA属性管理
-- フォーカス管理
-
-**⚡ PerformanceManager**
-- リアルタイムパフォーマンス監視
-- メモリ使用量トラッキング
-- CPU使用率監視
-- デバッグ情報収集
-
-**🏗️ ServiceContainer**
-- 依存性注入パターン実装
-- マネージャー間の疎結合
-- ライフサイクル管理
-- 型安全なサービス解決
-
-#### 設計パターン
-
-- **Manager Pattern**: 各機能を独立したマネージャーで管理
-- **Dependency Injection**: ServiceContainerによる型安全な依存性注入
-- **Event-Driven Architecture**: イベントベースの疎結合設計
-- **Error Boundary**: 階層化されたエラーハンドリング
-- **Single Responsibility**: 各クラスが単一の責任を持つ設計
-- **Type-Safe IPC**: TypeScriptインターフェースによる型安全なIPC通信
-- **ビルドツール**: Electron Forge
-- **自動アップデート**: update-electron-app + GitHub Releases
-- **アクセシビリティ**: ARIA attributes, keyboard navigation support
-
-## 📁 プロジェクト構造
+#### React + TypeScriptアーキテクチャ
+現在のバージョンでは、モダンなReact 18 + TypeScript実装を採用し、保守性と型安全性を重視した設計になっています：
 
 ```
-valorant-mouse-sensitivity-utility/
-├── main.js                    # Electronメインプロセス（IPC対応、設定管理）
-├── preload.js                 # プリロードスクリプト（IPC-based loading）
-├── index.html                 # メインHTML（IPC-only loading、アクセシビリティ）
-├── styles/
-│   └── main.css               # メインスタイルシート（flexbox layout、テーマサポート）
-├── scripts/
-│   ├── managers/              # TypeScript マネージャークラス群
-│   │   ├── BaseManager.ts            # 基底クラス・型定義
-│   │   ├── AlgorithmManager.ts       # アルゴリズム管理
-│   │   ├── UIManager.ts              # UI状態管理
-│   │   ├── ValidationManager.ts      # 入力検証
-│   │   ├── NotificationManager.ts    # 通知システム
-│   │   ├── AccessibilityManager.ts   # アクセシビリティ
-│   │   ├── PerformanceManager.ts     # パフォーマンス監視
-│   │   └── ServiceContainer.ts       # 依存性注入
-│   ├── app.ts                 # メインアプリケーション（TypeScript）
-│   ├── config.ts              # 設定管理（型安全）
-│   ├── i18n.ts                # 国際化システム（TypeScript）
-│   ├── accessibility.ts       # アクセシビリティ初期化
-│   └── performance.ts         # パフォーマンス初期化
-├── dist/                      # TypeScriptコンパイル結果
-│   └── scripts/               # .jsファイル（実際に実行される）
-├── types/
-│   └── index.ts               # TypeScript型定義
-├── docs/                      # ドキュメント
-├── tsconfig.json              # TypeScript設定
-├── package.json               # プロジェクト設定（v1.4.0）
-├── forge.config.js            # Electron Forge設定（ASAR対応）
-└── README.md                  # このファイル
+📁 src/
+├── 📁 common/
+│   ├── 📄 i18n.ts                # 国際化システム
+│   └── 📄 types.ts               # 共通型定義
+├── 📁 main/
+│   └── 📄 index.ts               # Electronメインプロセス
+└── 📁 renderer/
+    ├── 📁 components/
+    │   ├── 📄 App.tsx            # メインアプリケーション
+    │   ├── 📄 Header.tsx         # ヘッダーコンポーネント
+    │   ├── 📄 SetupPhase.tsx     # 初期設定画面
+    │   ├── 📄 AlgorithmSelector.tsx # アルゴリズム選択
+    │   ├── 📄 AdjustmentPhase.tsx   # 感度調整画面
+    │   ├── 📄 FinishPhase.tsx       # 結果表示画面
+    │   └── 📄 NotificationContainer.tsx # 通知コンポーネント
+    ├── 📁 hooks/
+    │   └── 📄 index.ts           # カスタムHooks
+    ├── 📄 index.tsx              # Reactエントリーポイント
+    └── 📄 index.html             # HTMLテンプレート
+
+📁 root files/
+├── 📄 main.js                    # Electronメイン
+├── 📄 preload.js                 # プリロードスクリプト
+└── 📄 index.html                 # HTMLテンプレート
+```
+
+#### 主要コンポーネントの責務
+- **App.tsx**: アプリケーション全体の状態管理とフェーズ制御
+- **Header.tsx**: テーマ切り替えと条件付きアルゴリズム表示
+- **SetupPhase.tsx**: DPI・感度設定とバリデーション
+- **AlgorithmSelector.tsx**: アルゴリズム選択インターフェース
+- **AdjustmentPhase.tsx**: アルゴリズムに基づく感度調整
+- **FinishPhase.tsx**: 結果表示と設定保存
+- **NotificationContainer.tsx**: GPU加速されたアニメーション通知
+- **useLanguage Hook**: 言語状態管理とIPC通信
+- **useNotification Hook**: 通知管理とアニメーション制御
+
+## 🎨 機能詳細
+
+```
+📁 valorant-mouse-sensitivity-utility/
+├──📄 main.js                    # Electronメインプロセス
+├──📄 preload.js                 # プリロードスクリプト（IPC bridge）
+├──📄 index.html                 # HTMLテンプレート
+├──📄 package.json               # プロジェクト設定
+├──📄 webpack.config.js          # Webpack設定
+├──📄 tsconfig.json              # TypeScript設定
+├──📁 src/
+│   ├──📁 common/
+│   │   ├──📄 i18n.ts                # 国際化システム
+│   │   └──📄 types.ts               # 共通型定義
+│   ├──📁 main/
+│   │   └──📄 index.ts               # Electronメインプロセス
+│   └──📁 renderer/
+│       ├──📁 components/
+│       │   ├──📄 App.tsx            # メインアプリケーション
+│       │   ├──📄 Header.tsx         # ヘッダーコンポーネント
+│       │   ├──📄 Setup.tsx          # 初期設定画面
+│       │   ├──📄 Adjustment.tsx     # 感度調整画面
+│       │   ├──📄 Result.tsx         # 結果表示画面
+│       │   └──📄 Notification.tsx   # 通知コンポーネント
+│       ├──📁 hooks/
+│       │   └──📄 index.ts           # カスタムHooks
+│       ├──📄 index.tsx              # Reactエントリーポイント
+│       └──📄 styles.css             # グローバルスタイル
+└──📁 docs/                      # ドキュメント
 ```
 
 ## 🎨 機能詳細
@@ -336,24 +297,21 @@ cd valorant-mouse-sensitivity-utility
 # 依存関係のインストール
 npm install
 
-# TypeScriptファイルのコンパイル
-npm run build:ts
-
 # 開発モードで起動
-npm run dev
+npm start
 
-# TypeScript型チェック
-npm run type-check
+# ビルド（本番用）
+npm run build
 
-# TypeScript監視モード（自動コンパイル）
-npm run build:watch
+# パッケージ作成
+npm run package
 ```
 
 #### 開発ワークフロー
 1. このリポジトリをフォーク
 2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. TypeScriptファイルを編集（`.ts`ファイル）
-4. `npm run build:ts`でコンパイル
+3. React + TypeScriptファイルを編集（`src/`ディレクトリ）
+4. 変更をテスト (`npm start`で確認)
 5. 変更をコミット (`git commit -m 'Add some amazing feature'`)
 6. ブランチにプッシュ (`git push origin feature/amazing-feature`)
 7. プルリクエストを作成
@@ -374,25 +332,23 @@ npm run build:watch
 
 ## 📊 更新履歴
 
-### v1.4.1 (Latest) - 2025年8月
-- 🔧 **完全TypeScript移行**: JavaScript → TypeScript 5.9.2
+### v1.4.0 (Latest) - 2025年8月
+- ✨ **Natural PSAアルゴリズムの追加**
+- 🌐 **完全な多言語対応（日本語・英語）**
+- 💾 **設定の永続化（言語・アルゴリズム・テーマ）**
+- ♿ **アクセシビリティ機能の強化**
+- 🚀 **パフォーマンス最適化**
+- 🎯 **メニューシステムの実装**
+- 🔧 **React + TypeScript実装**: モダンなフロントエンド技術スタック
 - 🛡️ **型安全性の向上**: 包括的な型定義とインターフェース
-- 🏗️ **アーキテクチャ強化**: モジュラー設計 + 型安全性
-- 🔄 **IPC-based Script Loading**: ERR_FILE_NOT_FOUND完全解決
-- 📦 **ASAR対応**: パッケージング時のリソースアクセス改善
+- 🏗️ **コンポーネントアーキテクチャ**: 再利用可能なReactコンポーネント設計
+- 🔄 **IPC通信**: Electronメイン・レンダラープロセス間の安全な通信
+- 📦 **ビルドシステム**: Webpack + TypeScript + Electron Forge
 - ⚡ **開発体験向上**: IDE補完、静的解析、リファクタリング安全性
-- 📁 **ビルドシステム**: TypeScript自動コンパイル対応
-- 🎯 **UI改善**: ボタン位置調整、flexboxレイアウト
-- 🛠️ **依存関係管理**: BaseManager優先読み込み、ReferenceError解決
-- 📚 **ドキュメント強化**: 技術仕様、アーキテクチャ説明更新
-
-### v1.4.0
-- ✨ Natural PSAアルゴリズムの追加
-- 🌐 完全な多言語対応（日本語・英語）
-- 💾 設定の永続化（言語・アルゴリズム・テーマ）
-- ♿ アクセシビリティ機能の強化
-- 🚀 パフォーマンス最適化
-- 🎯 メニューシステムの実装
+- 📁 **モジュラー設計**: カスタムフック、アルゴリズム分離、状態管理
+- 🎯 **UI/UX改善**: 条件付きレンダリング、GPU加速アニメーション
+- 🛠️ **アップデート管理**: ユーザー制御による安全なアップデート機能
+- 📚 **包括的ドキュメント**: 技術仕様、使用方法、開発ガイド
 
 ---
 
