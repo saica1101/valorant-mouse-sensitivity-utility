@@ -54,6 +54,7 @@ const I18N = {
                 leftOption: '👈 Aが快適',
                 rightOption: '👉 Bが快適',
                 equalOption: '🟰 どちらも同じ',
+                equalOptionNatural: '✅ 完了',
                 
                 // ナビゲーション
                 backButton: '🔙 戻る',
@@ -194,6 +195,7 @@ const I18N = {
                 leftOption: '👈 A is comfortable',
                 rightOption: '👉 B is comfortable',
                 equalOption: '🟰 Both are same',
+                equalOptionNatural: '✅ Finish',
                 
                 // Navigation
                 backButton: '🔙 Back',

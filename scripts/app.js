@@ -222,6 +222,8 @@ class MouseSensitivityUtility {
                     this.isMenuTriggered = false;
                     // 言語変更時にアルゴリズム表示も更新
                     this.updateAlgorithmDisplay();
+                    // 言語変更時にボタンテキストも更新
+                    this.updateEqualButtonForAlgorithm();
                 }
             });
         }
@@ -236,6 +238,8 @@ class MouseSensitivityUtility {
                 if (!this.algorithmLocked) {
                     this.currentAlgorithm = algorithm;
                     this.updateAlgorithmDisplay();
+                    // アルゴリズム変更時にボタンテキストも更新
+                    this.updateEqualButtonForAlgorithm();
                 } else {
                     // DPI選択後はアルゴリズムを変更できません
                 }
@@ -730,6 +734,7 @@ class MouseSensitivityUtility {
             this.updateAdjustmentTitle();
             this.showAdjustmentPhase();
             this.updateDisplay();
+            this.updateEqualButtonForAlgorithm();
         } catch (error) {
             const message = window.I18N ? 
                 window.I18N.t('notifications.errors.adjustmentStart', { error: error.message }) : 
@@ -798,6 +803,7 @@ class MouseSensitivityUtility {
         
         this.showAdjustmentPhase();
         this.updateDisplay();
+        this.updateEqualButtonForAlgorithm();
     }
     
     /**
@@ -838,6 +844,27 @@ class MouseSensitivityUtility {
                 ? 'ui.adjustmentTitle' 
                 : 'ui.adjustmentTitleNatural';
             titleElement.textContent = window.I18N.t(titleKey);
+        }
+    }
+
+    /**
+     * アルゴリズムに応じてequalボタンのテキストを更新
+     */
+    updateEqualButtonForAlgorithm() {
+        if (this.equalBtn && window.I18N) {
+            const textKey = this.currentAlgorithm === 'natural' 
+                ? 'ui.equalOptionNatural' 
+                : 'ui.equalOption';
+            this.equalBtn.textContent = window.I18N.t(textKey);
+            
+            // アクセシビリティ属性も更新
+            if (this.accessibilityManager && typeof this.accessibilityManager.addAriaLabel === 'function') {
+                try {
+                    this.accessibilityManager.addAriaLabel(this.equalBtn, window.I18N.t(textKey));
+                } catch (error) {
+                    console.warn('アクセシビリティラベルの更新に失敗:', error);
+                }
+            }
         }
     }
 
