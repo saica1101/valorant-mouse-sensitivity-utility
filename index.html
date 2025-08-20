@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="ui.title">Valorant Mouse Sensitivity Utility</title>
     <link rel="stylesheet" href="styles/main.css">
-    <script src="scripts/config.js"></script>
-    <script src="scripts/i18n.js"></script>
-    <script src="scripts/accessibility.js"></script>
-    <script src="scripts/performance.js"></script>
 </head>
 <body>
     <!-- 通知システム -->
     <div id="notificationContainer" class="notification-container" role="alert" aria-live="polite"></div>
     
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" data-i18n-aria="ui.themeToggle">🌙 <span data-i18n="ui.darkMode">ダークモード</span></button>
-    <div id="backPhase" class="hidden">
-        <button class="btn btn-back" id="backBtn" data-i18n="ui.backButton">🔙 戻る</button>
+    <!-- ヘッダーボタンコンテナ -->
+    <div class="header-buttons">
+        <div id="backPhase" class="hidden">
+            <button class="btn btn-back" id="backBtn" data-i18n="ui.backButton">🔙 戻る</button>
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" data-i18n-aria="ui.themeToggle">🌙 <span data-i18n="ui.darkMode">ダークモード</span></button>
     </div>
 
     <div class="container" role="main">
@@ -28,7 +27,7 @@
             </div>
             <div class="algorithm-info" id="algorithmInfo" style="margin-top: 10px; font-size: 0.9em; color: var(--text-secondary);">
                 <span data-i18n="ui.algorithm.title">アルゴリズム選択</span>: 
-                <span id="currentAlgorithm" data-i18n="ui.algorithm.ternary">三分探索PSAメソッド</span>
+                <span id="currentAlgorithm">読み込み中...</span>
             </div>
         </div>
 
@@ -37,17 +36,17 @@
                 <h3 data-i18n="ui.step1">Step 1: マウスDPIを入力または選択</h3>
                 <div class="input-group" role="group" aria-labelledby="dpi-label">
                     <label id="dpi-label" for="dpiInput" data-i18n="ui.dpiLabel">DPI値を入力:</label>
-                    <input type="number" id="dpiInput" data-i18n-placeholder="ui.dpiPlaceholder" placeholder="例: 800" min="1" max="10000" aria-describedby="dpi-help">
-                    <div id="dpi-help" class="sr-only" data-i18n="ui.dpiHelp">DPI値は1から10000の間で入力してください</div>
+                    <input type="number" id="dpiInput" data-i18n-placeholder="ui.dpiPlaceholder" placeholder="例: 800" min="400" max="50000" aria-describedby="dpi-help" data-validate="dpiInput">
+                    <div id="dpi-help" class="sr-only" data-i18n="ui.dpiHelp">DPI値は400から50000の間で入力してください</div>
                 </div>
                 <div class="dpi-buttons" role="group" aria-labelledby="dpi-presets">
                     <span id="dpi-presets" class="sr-only" data-i18n="ui.dpiPresets">プリセットDPI値:</span>
-                    <button class="dpi-btn" data-dpi="400" aria-label="DPI 400">400</button>
-                    <button class="dpi-btn" data-dpi="800" aria-label="DPI 800">800</button>
-                    <button class="dpi-btn" data-dpi="1600" aria-label="DPI 1600">1600</button>
-                    <button class="dpi-btn" data-dpi="3200" aria-label="DPI 3200">3200</button>
+                    <button class="dpi-btn dpi-preset" data-dpi="400" aria-label="DPI 400">400</button>
+                    <button class="dpi-btn dpi-preset" data-dpi="800" aria-label="DPI 800">800</button>
+                    <button class="dpi-btn dpi-preset" data-dpi="1600" aria-label="DPI 1600">1600</button>
+                    <button class="dpi-btn dpi-preset" data-dpi="3200" aria-label="DPI 3200">3200</button>
                 </div>
-                <button class="btn btn-primary" id="startBtn" style="width: 100%; margin-top: 20px;" data-i18n="ui.startButton">
+                <button class="btn btn-primary" id="startBtn" style="width: 100%; margin-top: 20px;" data-i18n="ui.startButton" data-validate="dpiInput">
                     感度調整を開始
                 </button>
             </div>
@@ -62,16 +61,16 @@
                 <p style="text-align: center; margin: 15px 0;" data-i18n="ui.comparisonInstructions">
                     以下の2つの感度を試して、どちらが快適か選んでください：
                 </p>
-                <div class="ternary-comparison" role="group" aria-labelledby="candidates-label">
+                <div class="ternary-comparison" id="candidatesContainer" role="group" aria-labelledby="candidates-label">
                     <span id="candidates-label" class="sr-only" data-i18n="ui.candidatesLabel">感度候補の比較</span>
                     <div class="candidate-option">
                         <div class="candidate-label" data-i18n="ui.candidateA">候補A</div>
-                        <div class="candidate-value" id="leftCandidate" aria-live="polite">0</div>
+                        <div class="candidate-value" id="candidateA" aria-live="polite">0</div>
                         <button class="btn btn-candidate" id="leftBtn" data-i18n="ui.leftOption">👈 Aが快適</button>
                     </div>
                     <div class="candidate-option">
                         <div class="candidate-label" data-i18n="ui.candidateB">候補B</div>
-                        <div class="candidate-value" id="rightCandidate" aria-live="polite">0</div>
+                        <div class="candidate-value" id="candidateB" aria-live="polite">0</div>
                         <button class="btn btn-candidate" id="rightBtn" data-i18n="ui.rightOption">👉 Bが快適</button>
                     </div>
                 </div>
@@ -81,18 +80,96 @@
             </div>
         </div>
 
-        <div id="finishPhase" class="hidden" role="region" aria-labelledby="finish-title">
+        <div id="finishPhase" class="hidden" role="region" aria-labelledby="complete-title">
             <div class="finish-message">
-                <h2 id="finish-title" data-i18n="ui.finishTitle">🎉 Finish!</h2>
+                <h2 id="complete-title" data-i18n="ui.completeTitle">� 最適な感度が見つかりました！</h2>
                 <p data-i18n="ui.finishMessage">最適な感度が見つかりました！</p>
                 <div class="result-display" style="margin: 20px 0;" role="status" aria-live="polite">
                     <span data-i18n="ui.finalSensitivity">最終感度:</span> <span id="finalSensitivity">0</span>
                 </div>
-                <button class="btn btn-primary" id="resetBtn" data-i18n="ui.resetButton">🔄 Reset</button>
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" id="copyButton" data-i18n="ui.copyButton" style="margin-right: 10px;">📋 クリップボードにコピー</button>
+                    <button class="btn btn-secondary" id="resetBtn" data-i18n="ui.restartButton">🔄 もう一度調整する</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="scripts/app.js"></script>
+    <!-- Scripts will be loaded dynamically via preload.js -->
+    <script>
+        // スクリプトの動的読み込みを開始
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM Content Loaded - Starting script loading...');
+            
+            // 診断情報を表示
+            console.log('Available APIs:', {
+                testAPI: typeof window.testAPI,
+                scriptLoader: typeof window.scriptLoader,
+                electronAPI: typeof window.electronAPI,
+                window_keys: Object.keys(window).filter(k => k.includes('script') || k.includes('electron') || k.includes('test'))
+            });
+            
+            // testAPIが利用可能かテスト
+            if (window.testAPI) {
+                console.log('testAPI available:', window.testAPI.test());
+            } else {
+                console.error('testAPI not available');
+            }
+            
+            try {
+                if (window.scriptLoader && window.scriptLoader.loadAllScripts) {
+                    console.log('scriptLoader available - starting script loading...');
+                    const results = await window.scriptLoader.loadAllScripts();
+                    console.log('All scripts loaded:', results);
+                    
+                    // すべてのスクリプトが読み込まれた後、少し待ってからアプリケーションを初期化
+                    setTimeout(() => {
+                        console.log('Checking for global classes...');
+                        console.log('ServiceContainer:', typeof window.ServiceContainer);
+                        console.log('UIManager:', typeof window.UIManager);
+                        console.log('MouseSensitivityUtility:', typeof window.MouseSensitivityUtility);
+                        
+                        // アプリケーション初期化イベントを発火
+                        const initEvent = new CustomEvent('scriptsLoaded');
+                        document.dispatchEvent(initEvent);
+                    }, 200);
+                } else {
+                    console.error('scriptLoader not available. Available window properties:', Object.keys(window).slice(0, 10));
+                    
+                    // フォールバック: electronAPIが利用可能かチェック
+                    if (window.electronAPI && window.electronAPI.loadScriptContent) {
+                        console.log('Trying fallback script loading via electronAPI...');
+                        // ここでmanualスクリプト読み込みを実装可能
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load scripts:', error);
+                
+                // エラー表示
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: #f8d7da;
+                    color: #721c24;
+                    padding: 20px;
+                    border: 1px solid #f5c6cb;
+                    border-radius: 5px;
+                    z-index: 9999;
+                    max-width: 500px;
+                    text-align: center;
+                `;
+                errorDiv.innerHTML = `
+                    <h3>スクリプト読み込みエラー</h3>
+                    <p>必要なファイルの読み込みに失敗しました。</p>
+                    <p>エラー: ${error.message}</p>
+                    <button onclick="location.reload()">再読み込み</button>
+                `;
+                document.body.appendChild(errorDiv);
+            }
+        });
+    </script>
 </body>
 </html>

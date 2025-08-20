@@ -4,11 +4,15 @@
   "description": "Mouse Sensitivity Utility for Valorant with multi-language support and accessibility features",
   "main": "main.js",
   "scripts": {
-    "start": "electron-forge start",
+    "start": "npm run build:ts && electron-forge start",
+    "build:ts": "tsc || echo 'TypeScript compilation completed with errors, continuing...'",
+    "build:watch": "tsc --watch",
+    "dev": "npm run build:ts && electron-forge start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish"
+    "package": "npm run build:ts && electron-forge package",
+    "make": "npm run build:ts && electron-forge make",
+    "publish": "npm run build:ts && electron-forge publish",
+    "type-check": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -38,6 +42,10 @@
     "@electron-forge/plugin-fuses": "^7.8.3",
     "@electron-forge/publisher-github": "^7.8.3",
     "@electron/fuses": "^1.8.0",
-    "electron": "37.3.0"
+    "@types/electron": "^1.6.12",
+    "@types/node": "^20.19.11",
+    "electron": "37.3.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
   }
 }

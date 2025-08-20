@@ -4,8 +4,11 @@
 [![Electron](https://img.shields.io/badge/Electron-37.3.0-47848F?logo=electron)](https://www.electronjs.org/)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)](https://github.com/electron/electron)
 [![Version](https://img.shields.io/badge/Version-1.4.0-brightgreen)](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)
+[![Code Quality](https://img.shields.io/badge/Code%20Quality-Refactored-success)](https://github.com/saica1101/valorant-mouse-sensitivity-utility)
 
 Valorantプレイヤー向けの最適なマウス感度を見つけるためのElectronアプリケーションです。**三分探索アルゴリズム**と**Natural PSA（Practical Sensitivity Algorithm）**の2つの手法を使用して、効率的にあなたにぴったりの感度設定を発見できます。
+
+**v1.4.0では大規模なリファクタリングを実施し、より保守しやすく拡張しやすいアーキテクチャに生まれ変わりました。**
 
 ## 🌐 多言語対応
 
@@ -29,7 +32,7 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 - 🔍 **2つの感度探索アルゴリズム**:
   - **三分探索**: 効率的な数学的アプローチ
   - **Natural PSA**: より自然で直感的な調整手法
-- 🌐 **多言語対応**: 日本語・英語の完全サポート
+- 🌐 **多言語対応**: 日本語・英語の完全サポート + システム言語自動検出
 - 🖱️ **DPI対応**: 400, 800, 1600, 3200の一般的なDPI値 + カスタム入力
 - 🌙 **テーマ切り替え**: ライトモード・ダークモード対応
 - 💾 **設定保存**: テーマ、言語、アルゴリズム設定の自動保存・復元
@@ -37,6 +40,9 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 - 🔄 **自動アップデート**: GitHubリリースからの自動更新機能
 - ♿ **アクセシビリティ**: キーボードナビゲーション、スクリーンリーダー対応
 - 🎯 **パフォーマンス最適化**: 軽量でスムーズな動作
+- ✅ **リアルタイムバリデーション**: 入力値の即座な検証とエラー表示
+- 📱 **レスポンシブデザイン**: 様々な画面サイズに対応
+- 🔧 **モジュラー設計**: 保守しやすい機能分割アーキテクチャ
 
 ## 🚀 クイックスタート
 
@@ -136,12 +142,69 @@ Natural PSAは7回の反復を通じて段階的に最適な感度に収束し�
 
 ### 技術スタック
 - **フレームワーク**: Electron 37.3.0
-- **言語**: JavaScript (ES6+)
+- **言語**: TypeScript 5.9.2 (コンパイル済みJavaScript)
 - **UI**: HTML5, CSS3 (CSS Variables for theming)
 - **国際化**: カスタムi18nシステム with localStorage persistence
 - **IPC通信**: Electron IPC for main-renderer communication
 - **設定管理**: JSON-based settings with auto-save/restore
 - **パフォーマンス**: Optimized monitoring with conditional execution
+- **アーキテクチャ**: モジュラー設計 with Manager pattern + TypeScript型安全性
+- **型定義**: 包括的なTypeScriptインターフェース定義
+
+### 🏗️ アーキテクチャ（v1.4.0 リファクタリング）
+
+#### マネージャーベースアーキテクチャ
+v1.4.0では、単一の巨大なクラスを以下の責任分離されたマネージャーに分割しました：
+
+```
+📁 scripts/managers/
+├── 📄 BaseManager.js          # 基底クラス（共通機能）
+├── 📄 AlgorithmManager.js     # アルゴリズム管理
+├── 📄 UIManager.js            # UI状態管理・フェーズ遷移
+├── 📄 ValidationManager.js    # 入力検証・バリデーション
+├── 📄 NotificationManager.js  # 通知システム
+└── 📄 app.js                  # メインアプリケーション
+```
+
+#### 各マネージャーの責任
+
+**🏛️ BaseManager**
+- 共通のエラーハンドリング
+- イベントリスナー管理
+- ログ出力システム
+- ユーティリティ関数（debounce, throttle等）
+
+**🧮 AlgorithmManager**
+- 三分探索・Natural PSAアルゴリズムの実装
+- アルゴリズム状態管理
+- メインプロセスとの同期
+- アルゴリズム表示の更新
+
+**🎨 UIManager**
+- フェーズ遷移管理（setup → adjustment → complete）
+- テーマ切り替え
+- 要素の表示/非表示制御
+- アニメーション管理
+
+**✅ ValidationManager**
+- リアルタイム入力検証
+- カスタムバリデーター
+- エラーメッセージ表示
+- フォームバリデーション
+
+**📢 NotificationManager**
+- 通知の表示・管理
+- 自動非表示タイマー
+- 通知キューイング
+- アクセシビリティ対応
+
+#### 設計パターン
+
+- **Manager Pattern**: 各機能を独立したマネージャーで管理
+- **Dependency Injection**: 設定オブジェクトによる依存性注入
+- **Event-Driven Architecture**: イベントベースの疎結合設計
+- **Error Boundary**: 階層化されたエラーハンドリング
+- **Single Responsibility**: 各クラスが単一の責任を持つ設計
 - **ビルドツール**: Electron Forge
 - **自動アップデート**: update-electron-app + GitHub Releases
 - **アクセシビリティ**: ARIA attributes, keyboard navigation support
@@ -197,11 +260,42 @@ valorant-mouse-sensitivity-utility/
 プルリクエストを歓迎します！大きな変更を行う場合は、まずIssueを作成して変更内容について議論してください。
 
 ### 開発環境のセットアップ
+
+#### 必要な環境
+- Node.js (v16+)
+- npm または yarn
+- TypeScript 5.9.2+
+
+#### セットアップ手順
+```bash
+# リポジトリのクローン
+git clone https://github.com/saica1101/valorant-mouse-sensitivity-utility.git
+cd valorant-mouse-sensitivity-utility
+
+# 依存関係のインストール
+npm install
+
+# TypeScriptファイルのコンパイル
+npm run build:ts
+
+# 開発モードで起動
+npm run dev
+
+# TypeScript型チェック
+npm run type-check
+
+# TypeScript監視モード（自動コンパイル）
+npm run build:watch
+```
+
+#### 開発ワークフロー
 1. このリポジトリをフォーク
 2. 機能ブランチを作成 (`git checkout -b feature/amazing-feature`)
-3. 変更をコミット (`git commit -m 'Add some amazing feature'`)
-4. ブランチにプッシュ (`git push origin feature/amazing-feature`)
-5. プルリクエストを作成
+3. TypeScriptファイルを編集（`.ts`ファイル）
+4. `npm run build:ts`でコンパイル
+5. 変更をコミット (`git commit -m 'Add some amazing feature'`)
+6. ブランチにプッシュ (`git push origin feature/amazing-feature`)
+7. プルリクエストを作成
 
 ## 📝 ライセンス
 
@@ -219,7 +313,14 @@ valorant-mouse-sensitivity-utility/
 
 ## 📊 更新履歴
 
-### v1.4.0 (Latest)
+### v1.4.1 (Latest)
+- 🔧 **完全TypeScript移行**: JavaScript → TypeScript 5.9.2
+- 🛡️ **型安全性の向上**: 包括的な型定義とインターフェース
+- 🏗️ **アーキテクチャ強化**: モジュラー設計 + 型安全性
+- ⚡ **開発体験向上**: IDE補完、静的解析、リファクタリング安全性
+- 📁 **ビルドシステム**: TypeScript自動コンパイル対応
+
+### v1.4.0
 - ✨ Natural PSAアルゴリズムの追加
 - 🌐 完全な多言語対応（日本語・英語）
 - 💾 設定の永続化（言語・アルゴリズム・テーマ）

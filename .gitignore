@@ -4,6 +4,7 @@
 node_modules/
 screenshots/README.md
 valorant-mouse-sensitivity-utility-*/
+./scripts/app-legacy.js
 
 # Build output
 out/

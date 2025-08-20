@@ -4,6 +4,15 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 module.exports = {
   packagerConfig: {
     asar: true,
+    ignore: [
+      /^\/\.vscode/,
+      /^\/\.git/,
+      /^\/node_modules\/\.cache/,
+      /^\/src/,
+      /scripts.*\.ts$/,
+      /tsconfig\.json$/
+    ]
+    // distフォルダをASARアーカイブに含める（extraResourceは削除）
   },
   rebuildConfig: {},
   makers: [

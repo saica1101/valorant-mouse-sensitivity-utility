@@ -78,10 +78,24 @@ body {
     opacity: 0.7;
 }
 
-.theme-toggle {
-    position: absolute;
+/* ヘッダーボタンコンテナ */
+.header-buttons {
+    position: fixed;
     top: 20px;
+    left: 20px;
     right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.header-buttons > * {
+    pointer-events: auto;
+}
+
+.theme-toggle {
     background: none;
     border: 2px solid var(--border-color);
     border-radius: 20px;
@@ -89,6 +103,11 @@ body {
     color: var(--text-color);
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1;
+    box-sizing: border-box;
+    margin-left: auto;
 }
 
 .theme-toggle:hover {
@@ -191,9 +210,6 @@ input[type="number"], select {
 }
 
 .btn-back {
-    position: absolute;
-    top: 20px;
-    left: 20px;
     background: none;
     border: 2px solid var(--border-color);
     border-radius: 20px;
@@ -201,6 +217,10 @@ input[type="number"], select {
     color: var(--text-color);
     cursor: pointer;
     transition: all 0.3s ease;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1;
+    box-sizing: border-box;
 }
 
 .btn-back:hover {
@@ -291,9 +311,9 @@ input[type="number"], select {
 /* 通知システム */
 .notification-container {
     position: fixed;
-    top: 20px;
+    top: 70px;
     right: 20px;
-    z-index: 1000;
+    z-index: 999;
     display: flex;
     flex-direction: column;
     gap: 10px;
