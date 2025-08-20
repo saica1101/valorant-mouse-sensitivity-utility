@@ -1,6 +1,6 @@
 {
   "name": "valorant-mouse-sensitivity-utility",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Mouse Sensitivity Utility for Valorant",
   "main": "main.js",
   "scripts": {

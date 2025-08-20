@@ -90,13 +90,16 @@ right_third = lower_bound + (2 * range) / 3
 
 ```
 valorant-mouse-sensitivity-utility/
-├── src/
-│   ├── main.js          # メインプロセス
-│   ├── preload.js       # プリロードスクリプト
-│   └── index.html       # レンダラープロセス
+├── main.js              # Electronメインプロセス
+├── preload.js           # プリロードスクリプト（IPCブリッジ）
+├── index.html           # メインHTML
+├── styles/
+│   └── main.css         # メインスタイルシート
+├── scripts/
+│   └── app.js           # アプリケーションロジック（三分探索）
 ├── package.json         # プロジェクト設定
-├── README.md           # このファイル
-└── forge.config.js     # Electron Forge設定
+├── forge.config.js      # Electron Forge設定
+└── README.md           # このファイル
 ```
 
 ## 🎨 テーマ
