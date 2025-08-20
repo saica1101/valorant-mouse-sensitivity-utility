@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, Menu } = require('electron');
 const { updateElectronApp, UpdateSourceType } = require('update-electron-app');
 const path = require('path');
+const fs = require('fs');
 
 // 自動アップデート設定
 updateElectronApp({
@@ -12,9 +13,45 @@ updateElectronApp({
   logger: require("electron-log")
 });
 
-let mainWindow;
-let currentLanguage = 'ja'; // デフォルト言語
-let currentAlgorithm = 'ternary'; // デフォルトアルゴリズム
+// 設定ファイルのパス
+const settingsPath = path.join(app.getPath('userData'), 'settings.json');
+
+// デフォルト設定
+const defaultSettings = {
+  language: 'ja',
+  algorithm: 'ternary'
+};
+
+// 設定を読み込み
+function loadSettings() {
+  try {
+    if (fs.existsSync(settingsPath)) {
+      const data = fs.readFileSync(settingsPath, 'utf8');
+      return { ...defaultSettings, ...JSON.parse(data) };
+    }
+  } catch (error) {
+    console.warn('設定ファイルの読み込みに失敗しました:', error);
+  }
+  return defaultSettings;
+}
+
+// 設定を保存
+function saveSettings(settings) {
+  try {
+    const userDataPath = path.dirname(settingsPath);
+    if (!fs.existsSync(userDataPath)) {
+      fs.mkdirSync(userDataPath, { recursive: true });
+    }
+    fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2));
+  } catch (error) {
+    console.error('設定ファイルの保存に失敗しました:', error);
+  }
+}
+
+// 設定を読み込んで変数に設定
+const settings = loadSettings();
+let currentLanguage = settings.language;
+let currentAlgorithm = settings.algorithm;
 let isAlgorithmLocked = false; // アルゴリズム選択のロック状態
 
 // メニューテンプレートを動的に作成
@@ -94,6 +131,13 @@ function createMenuTemplate() {
 // 言語設定変更
 function setLanguage(language) {
   currentLanguage = language;
+  
+  // 設定を保存
+  saveSettings({
+    language: currentLanguage,
+    algorithm: currentAlgorithm
+  });
+  
   updateMenu();
   
   // レンダラープロセスに言語変更を通知
@@ -109,6 +153,13 @@ function setAlgorithm(algorithm) {
   }
   
   currentAlgorithm = algorithm;
+  
+  // 設定を保存
+  saveSettings({
+    language: currentLanguage,
+    algorithm: currentAlgorithm
+  });
+  
   updateMenu();
   
   // レンダラープロセスにアルゴリズム変更を通知

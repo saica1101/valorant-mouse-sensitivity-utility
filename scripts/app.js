@@ -401,8 +401,8 @@ class MouseSensitivityUtility {
         
         // 言語セレクターのイベント
         if (this.languageSelector && window.I18N) {
-            this.languageSelector.addEventListener('change', (e) => {
-                window.I18N.setLanguage(e.target.value);
+            this.languageSelector.addEventListener('change', async (e) => {
+                await window.I18N.setLanguage(e.target.value);
                 this.updateUILanguage();
             });
         }

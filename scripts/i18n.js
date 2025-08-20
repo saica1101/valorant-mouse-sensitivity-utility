@@ -333,10 +333,20 @@ const I18N = {
      * 言語を設定
      * @param {string} language - 言語コード ('ja' | 'en')
      */
-    setLanguage(language) {
+    async setLanguage(language) {
         if (this.translations[language]) {
             this.currentLanguage = language;
             this.saveLanguage();
+            
+            // メインプロセスにも言語変更を通知
+            if (window.electronAPI && window.electronAPI.setLanguage) {
+                try {
+                    await window.electronAPI.setLanguage(language);
+                } catch (error) {
+                    console.warn('メインプロセスへの言語設定同期に失敗しました:', error);
+                }
+            }
+            
             this.updatePageContent();
         }
     },
