@@ -40,12 +40,38 @@ const CONFIG = {
         STORAGE_KEY: 'theme'
     },
     
+    // 多言語設定
+    I18N: {
+        DEFAULT_LANGUAGE: 'ja',
+        SUPPORTED_LANGUAGES: ['ja', 'en'],
+        STORAGE_KEY: 'app-language'
+    },
+    
+    // アクセシビリティ設定
+    ACCESSIBILITY: {
+        FOCUS_TRAP: true,
+        HIGH_CONTRAST: false,
+        SCREEN_READER_SUPPORT: true,
+        KEYBOARD_NAVIGATION: true,
+        FOCUS_INDICATOR_WIDTH: 2,
+        TAB_INDEX_START: 1
+    },
+    
+    // パフォーマンス設定
+    PERFORMANCE: {
+        DEBOUNCE_DELAY: 300,
+        THROTTLE_DELAY: 100,
+        LAZY_LOAD: true,
+        VIRTUAL_SCROLL: false,
+        CACHE_SIZE: 50
+    },
+    
     // アプリケーション情報
     APP: {
         NAME: 'VMSU',
         FULL_NAME: 'Valorant Mouse Sensitivity Utility',
         DESCRIPTION: '最適なマウス感度を見つけましょう',
-        FALLBACK_VERSION: 'v1.3.4'
+        FALLBACK_VERSION: 'v1.4.0'
     }
 };
 

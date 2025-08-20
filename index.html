@@ -3,87 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Valorant Mouse Sensitivity Utility</title>
+    <title data-i18n="ui.title">Valorant Mouse Sensitivity Utility</title>
     <link rel="stylesheet" href="styles/main.css">
     <script src="scripts/config.js"></script>
+    <script src="scripts/i18n.js"></script>
+    <script src="scripts/accessibility.js"></script>
+    <script src="scripts/performance.js"></script>
 </head>
 <body>
     <!-- 通知システム -->
-    <div id="notificationContainer" class="notification-container"></div>
+    <div id="notificationContainer" class="notification-container" role="alert" aria-live="polite"></div>
     
-    <button class="theme-toggle" id="themeToggle">🌙 ダークモード</button>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme" data-i18n-aria="ui.themeToggle">🌙 <span data-i18n="ui.darkMode">ダークモード</span></button>
     <div id="backPhase" class="hidden">
-        <button class="btn btn-back" id="backBtn">🔙 戻る</button>
+        <button class="btn btn-back" id="backBtn" data-i18n="ui.backButton">🔙 戻る</button>
     </div>
 
-    <div class="container">
+    <div class="container" role="main">
         <div class="header">
             <h1>🎯 VMSU</h1>
-            <p>最適なマウス感度を見つけましょう</p>
-            <div class="version-info">
-                <span id="version">読み込み中...</span>
+            <p data-i18n="ui.subtitle">最適なマウス感度を見つけましょう</p>
+            <div class="version-info" role="contentinfo">
+                <span id="version" aria-live="polite">読み込み中...</span>
+            </div>
+            <div class="algorithm-info" id="algorithmInfo" style="margin-top: 10px; font-size: 0.9em; color: var(--text-secondary);">
+                <span data-i18n="ui.algorithm.title">アルゴリズム選択</span>: 
+                <span id="currentAlgorithm" data-i18n="ui.algorithm.ternary">三分探索PSAメソッド</span>
             </div>
         </div>
 
         <div id="setupPhase">
             <div class="step">
-                <h3>Step 1: マウスDPIを入力または選択</h3>
-                <div class="input-group">
-                    <label for="dpiInput">DPI値を入力:</label>
-                    <input type="number" id="dpiInput" placeholder="例: 800" min="1" max="10000">
+                <h3 data-i18n="ui.step1">Step 1: マウスDPIを入力または選択</h3>
+                <div class="input-group" role="group" aria-labelledby="dpi-label">
+                    <label id="dpi-label" for="dpiInput" data-i18n="ui.dpiLabel">DPI値を入力:</label>
+                    <input type="number" id="dpiInput" data-i18n-placeholder="ui.dpiPlaceholder" placeholder="例: 800" min="1" max="10000" aria-describedby="dpi-help">
+                    <div id="dpi-help" class="sr-only" data-i18n="ui.dpiHelp">DPI値は1から10000の間で入力してください</div>
                 </div>
-                <div class="dpi-buttons">
-                    <button class="dpi-btn" data-dpi="400">400</button>
-                    <button class="dpi-btn" data-dpi="800">800</button>
-                    <button class="dpi-btn" data-dpi="1600">1600</button>
-                    <button class="dpi-btn" data-dpi="3200">3200</button>
+                <div class="dpi-buttons" role="group" aria-labelledby="dpi-presets">
+                    <span id="dpi-presets" class="sr-only" data-i18n="ui.dpiPresets">プリセットDPI値:</span>
+                    <button class="dpi-btn" data-dpi="400" aria-label="DPI 400">400</button>
+                    <button class="dpi-btn" data-dpi="800" aria-label="DPI 800">800</button>
+                    <button class="dpi-btn" data-dpi="1600" aria-label="DPI 1600">1600</button>
+                    <button class="dpi-btn" data-dpi="3200" aria-label="DPI 3200">3200</button>
                 </div>
-                <button class="btn btn-primary" id="startBtn" style="width: 100%; margin-top: 20px;">
+                <button class="btn btn-primary" id="startBtn" style="width: 100%; margin-top: 20px;" data-i18n="ui.startButton">
                     感度調整を開始
                 </button>
             </div>
         </div>
 
-        <div id="adjustmentPhase" class="hidden">
+        <div id="adjustmentPhase" class="hidden" role="region" aria-labelledby="adjustment-title">
             <div class="step">
-                <h3>感度調整（三分探索）</h3>
-                <div class="range-display" id="rangeDisplay">
-                    調整範囲: <span id="lowerBound">0</span> ～ <span id="upperBound">0</span>
+                <h3 id="adjustment-title" data-i18n="ui.adjustmentTitle" style="text-align: center;">感度調整</h3>
+                <div class="range-display" id="rangeDisplay" aria-live="polite">
+                    <span data-i18n="ui.rangeLabel">調整範囲:</span> <span id="lowerBound">0</span> ～ <span id="upperBound">0</span>
                 </div>
-                <p style="text-align: center; margin: 15px 0;">
+                <p style="text-align: center; margin: 15px 0;" data-i18n="ui.comparisonInstructions">
                     以下の2つの感度を試して、どちらが快適か選んでください：
                 </p>
-                <div class="ternary-comparison">
+                <div class="ternary-comparison" role="group" aria-labelledby="candidates-label">
+                    <span id="candidates-label" class="sr-only" data-i18n="ui.candidatesLabel">感度候補の比較</span>
                     <div class="candidate-option">
-                        <div class="candidate-label">候補A</div>
-                        <div class="candidate-value" id="leftCandidate">0</div>
-                        <button class="btn btn-candidate" id="leftBtn">👈 Aが快適</button>
+                        <div class="candidate-label" data-i18n="ui.candidateA">候補A</div>
+                        <div class="candidate-value" id="leftCandidate" aria-live="polite">0</div>
+                        <button class="btn btn-candidate" id="leftBtn" data-i18n="ui.leftOption">👈 Aが快適</button>
                     </div>
                     <div class="candidate-option">
-                        <div class="candidate-label">候補B</div>
-                        <div class="candidate-value" id="rightCandidate">0</div>
-                        <button class="btn btn-candidate" id="rightBtn">👉 Bが快適</button>
+                        <div class="candidate-label" data-i18n="ui.candidateB">候補B</div>
+                        <div class="candidate-value" id="rightCandidate" aria-live="polite">0</div>
+                        <button class="btn btn-candidate" id="rightBtn" data-i18n="ui.rightOption">👉 Bが快適</button>
                     </div>
                 </div>
                 <div style="text-align: center; margin-top: 15px;">
-                    <button class="btn btn-equal" id="equalBtn">🟰 どちらも同じ</button>
+                    <button class="btn btn-equal" id="equalBtn" data-i18n="ui.equalOption">🟰 どちらも同じ</button>
                 </div>
             </div>
         </div>
 
-        <div id="finishPhase" class="hidden">
+        <div id="finishPhase" class="hidden" role="region" aria-labelledby="finish-title">
             <div class="finish-message">
-                <h2>🎉 Finish!</h2>
-                <p>最適な感度が見つかりました！</p>
-                <div class="result-display" style="margin: 20px 0;">
-                    最終感度: <span id="finalSensitivity">0</span>
+                <h2 id="finish-title" data-i18n="ui.finishTitle">🎉 Finish!</h2>
+                <p data-i18n="ui.finishMessage">最適な感度が見つかりました！</p>
+                <div class="result-display" style="margin: 20px 0;" role="status" aria-live="polite">
+                    <span data-i18n="ui.finalSensitivity">最終感度:</span> <span id="finalSensitivity">0</span>
                 </div>
-                <button class="btn btn-primary" id="resetBtn">🔄 Reset</button>
+                <button class="btn btn-primary" id="resetBtn" data-i18n="ui.resetButton">🔄 Reset</button>
             </div>
         </div>
     </div>
 
-    <script src="scripts/config.js"></script>
     <script src="scripts/app.js"></script>
 </body>
 </html>
