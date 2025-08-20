@@ -9,7 +9,11 @@
 [![Version](https://img.shields.io/badge/Version-1.4.0-brightgreen)](https://github.com/saica1101/valorant-mouse-sensitivity-utility/releases)
 [![Code Quality](https://img.shields.io/badge/Code%20Quality-Modern%20React-success)](https://github.com/saica1101/valorant-mouse-sensitivity-utility)
 
-Valorantプレイヤー向けの最適なマウス感度を見つけるためのElectronアプリケーションです。**三分探索アルゴリズム**と**Natural PSA（Practical Sensitivity Algorithm）**の2つの手法を使用して、効率的にあなたにぴったりの感度設定を発見できます。
+Valorantプレイヤー向けの最適なマウス感度を見つけるためのElectronアプリケーションです。
+- **三分探索アルゴリズム**
+- **Natural PSA(Perfect Sensitivity Approximation)**
+
+の2つの手法を使用して、効率的にあなたにぴったりの感度設定を発見できます。
 
 **v1.4.0では完全なReact + TypeScript移行を実施し、モダンで保守しやすいアーキテクチャに生まれ変わりました。**
 
@@ -141,7 +145,7 @@ right_third = lower_bound + (2 * range) / 3
 - 「どちらも同じ」という選択肢により、不確実な判断の影響を軽減
 - PSAメソッドの理論に基づいた、より信頼性の高い感度探索
 
-#### Natural PSA（Practical Sensitivity Algorithm）
+#### Natural PSA（Perfect Sensitivity Approximation）
 ```
 # 初期設定
 base_sensitivity = 280 / DPI #(Valorant Pro Playerの多くがeDPI280の近似値の為)
