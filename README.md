@@ -97,7 +97,7 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
 - ダウンロード完了時にユーザーに通知し、再起動確認ダイアログを表示
 - ユーザーの承認後、アプリが自動再起動してアップデートが適用
 
-## ⚙️ 技術仕様
+### ⚙️ 技術仕様
 
 ### アルゴリズム詳細
 
@@ -142,69 +142,113 @@ Natural PSAは7回の反復を通じて段階的に最適な感度に収束し�
 
 ### 技術スタック
 - **フレームワーク**: Electron 37.3.0
-- **言語**: TypeScript 5.9.2 (コンパイル済みJavaScript)
+- **言語**: TypeScript 5.9.2 (完全移行済み)
+- **アーキテクチャ**: IPC-based script loading system
+- **パッケージング**: ASAR archive support
 - **UI**: HTML5, CSS3 (CSS Variables for theming)
 - **国際化**: カスタムi18nシステム with localStorage persistence
-- **IPC通信**: Electron IPC for main-renderer communication
+- **IPC通信**: Electron IPC for main-renderer communication + dynamic script loading
 - **設定管理**: JSON-based settings with auto-save/restore
 - **パフォーマンス**: Optimized monitoring with conditional execution
+- **型安全性**: 包括的なTypeScriptインターフェース定義
+- **エラーハンドリング**: 階層化されたエラー処理とログシステム
 - **アーキテクチャ**: モジュラー設計 with Manager pattern + TypeScript型安全性
 - **型定義**: 包括的なTypeScriptインターフェース定義
 
 ### 🏗️ アーキテクチャ（v1.4.0 リファクタリング）
 
 #### マネージャーベースアーキテクチャ
-v1.4.0では、単一の巨大なクラスを以下の責任分離されたマネージャーに分割しました：
+v1.4.0では、完全なTypeScript移行と共に、単一の巨大なクラスを以下の責任分離されたマネージャーに分割しました：
 
 ```
 📁 scripts/managers/
-├── 📄 BaseManager.js          # 基底クラス（共通機能）
-├── 📄 AlgorithmManager.js     # アルゴリズム管理
-├── 📄 UIManager.js            # UI状態管理・フェーズ遷移
-├── 📄 ValidationManager.js    # 入力検証・バリデーション
-├── 📄 NotificationManager.js  # 通知システム
-└── 📄 app.js                  # メインアプリケーション
+├── 📄 BaseManager.ts          # 基底クラス（共通機能、型定義）
+├── 📄 AlgorithmManager.ts     # アルゴリズム管理
+├── 📄 UIManager.ts            # UI状態管理・フェーズ遷移
+├── 📄 ValidationManager.ts    # 入力検証・バリデーション
+├── 📄 NotificationManager.ts  # 通知システム
+├── 📄 AccessibilityManager.ts # アクセシビリティ機能
+├── 📄 PerformanceManager.ts   # パフォーマンス監視
+└── 📄 ServiceContainer.ts     # 依存性注入コンテナ
+
+📁 scripts/
+├── 📄 app.ts                  # メインアプリケーション
+├── 📄 config.ts               # 設定管理
+├── 📄 i18n.ts                 # 国際化システム
+├── 📄 accessibility.ts        # アクセシビリティ初期化
+└── 📄 performance.ts          # パフォーマンス初期化
+
+📁 types/
+└── 📄 index.ts                # TypeScript型定義
 ```
+
+#### IPC-Based Script Loading System
+ERR_FILE_NOT_FOUND問題を完全に解決するため、革新的なIPC-basedスクリプト読み込みシステムを実装：
+
+- **動的IPCローディング**: ファイルパスではなくIPCチャンネル経由でスクリプト内容を取得
+- **ASAR対応**: パッケージング後もアーカイブ内リソースに正確にアクセス
+- **依存関係管理**: BaseManagerを最初に読み込み、依存エラーを防止
+- **フォールバック機能**: 複数のパス候補で確実なリソース発見
+- **型安全な通信**: TypeScriptインターフェースによる厳密なIPC型定義
 
 #### 各マネージャーの責任
 
 **🏛️ BaseManager**
-- 共通のエラーハンドリング
+- 共通のエラーハンドリング・ログシステム
+- TypeScript型安全な基底インターフェース
 - イベントリスナー管理
-- ログ出力システム
 - ユーティリティ関数（debounce, throttle等）
 
 **🧮 AlgorithmManager**
 - 三分探索・Natural PSAアルゴリズムの実装
-- アルゴリズム状態管理
+- 型安全なアルゴリズム状態管理
 - メインプロセスとの同期
 - アルゴリズム表示の更新
 
 **🎨 UIManager**
 - フェーズ遷移管理（setup → adjustment → complete）
-- テーマ切り替え
+- テーマ切り替え・レスポンシブデザイン
 - 要素の表示/非表示制御
 - アニメーション管理
 
 **✅ ValidationManager**
 - リアルタイム入力検証
-- カスタムバリデーター
+- 型安全なカスタムバリデーター
 - エラーメッセージ表示
 - フォームバリデーション
 
 **📢 NotificationManager**
-- 通知の表示・管理
+- 通知の表示・管理・キューイング
 - 自動非表示タイマー
-- 通知キューイング
 - アクセシビリティ対応
+- 型安全な通知インターフェース
+
+**♿ AccessibilityManager**
+- キーボードナビゲーション
+- スクリーンリーダー対応
+- ARIA属性管理
+- フォーカス管理
+
+**⚡ PerformanceManager**
+- リアルタイムパフォーマンス監視
+- メモリ使用量トラッキング
+- CPU使用率監視
+- デバッグ情報収集
+
+**🏗️ ServiceContainer**
+- 依存性注入パターン実装
+- マネージャー間の疎結合
+- ライフサイクル管理
+- 型安全なサービス解決
 
 #### 設計パターン
 
 - **Manager Pattern**: 各機能を独立したマネージャーで管理
-- **Dependency Injection**: 設定オブジェクトによる依存性注入
+- **Dependency Injection**: ServiceContainerによる型安全な依存性注入
 - **Event-Driven Architecture**: イベントベースの疎結合設計
 - **Error Boundary**: 階層化されたエラーハンドリング
 - **Single Responsibility**: 各クラスが単一の責任を持つ設計
+- **Type-Safe IPC**: TypeScriptインターフェースによる型安全なIPC通信
 - **ビルドツール**: Electron Forge
 - **自動アップデート**: update-electron-app + GitHub Releases
 - **アクセシビリティ**: ARIA attributes, keyboard navigation support
@@ -213,18 +257,35 @@ v1.4.0では、単一の巨大なクラスを以下の責任分離されたマ�
 
 ```
 valorant-mouse-sensitivity-utility/
-├── main.js              # Electronメインプロセス（メニュー、設定管理）
-├── preload.js           # プリロードスクリプト（IPCブリッジ）
-├── index.html           # メインHTML（多言語対応、アクセシビリティ）
+├── main.js                    # Electronメインプロセス（IPC対応、設定管理）
+├── preload.js                 # プリロードスクリプト（IPC-based loading）
+├── index.html                 # メインHTML（IPC-only loading、アクセシビリティ）
 ├── styles/
-│   └── main.css         # メインスタイルシート（テーマサポート）
+│   └── main.css               # メインスタイルシート（flexbox layout、テーマサポート）
 ├── scripts/
-│   ├── app.js           # アプリケーションロジック（両アルゴリズム実装）
-│   ├── i18n.js          # 国際化システム（日本語・英語サポート）
-│   └── performance.js   # パフォーマンス最適化（開発・本番切り替え）
-├── package.json         # プロジェクト設定（v1.4.0）
-├── forge.config.js      # Electron Forge設定
-└── README.md           # このファイル
+│   ├── managers/              # TypeScript マネージャークラス群
+│   │   ├── BaseManager.ts            # 基底クラス・型定義
+│   │   ├── AlgorithmManager.ts       # アルゴリズム管理
+│   │   ├── UIManager.ts              # UI状態管理
+│   │   ├── ValidationManager.ts      # 入力検証
+│   │   ├── NotificationManager.ts    # 通知システム
+│   │   ├── AccessibilityManager.ts   # アクセシビリティ
+│   │   ├── PerformanceManager.ts     # パフォーマンス監視
+│   │   └── ServiceContainer.ts       # 依存性注入
+│   ├── app.ts                 # メインアプリケーション（TypeScript）
+│   ├── config.ts              # 設定管理（型安全）
+│   ├── i18n.ts                # 国際化システム（TypeScript）
+│   ├── accessibility.ts       # アクセシビリティ初期化
+│   └── performance.ts         # パフォーマンス初期化
+├── dist/                      # TypeScriptコンパイル結果
+│   └── scripts/               # .jsファイル（実際に実行される）
+├── types/
+│   └── index.ts               # TypeScript型定義
+├── docs/                      # ドキュメント
+├── tsconfig.json              # TypeScript設定
+├── package.json               # プロジェクト設定（v1.4.0）
+├── forge.config.js            # Electron Forge設定（ASAR対応）
+└── README.md                  # このファイル
 ```
 
 ## 🎨 機能詳細
@@ -313,12 +374,17 @@ npm run build:watch
 
 ## 📊 更新履歴
 
-### v1.4.1 (Latest)
+### v1.4.1 (Latest) - 2025年8月
 - 🔧 **完全TypeScript移行**: JavaScript → TypeScript 5.9.2
 - 🛡️ **型安全性の向上**: 包括的な型定義とインターフェース
 - 🏗️ **アーキテクチャ強化**: モジュラー設計 + 型安全性
+- 🔄 **IPC-based Script Loading**: ERR_FILE_NOT_FOUND完全解決
+- 📦 **ASAR対応**: パッケージング時のリソースアクセス改善
 - ⚡ **開発体験向上**: IDE補完、静的解析、リファクタリング安全性
 - 📁 **ビルドシステム**: TypeScript自動コンパイル対応
+- 🎯 **UI改善**: ボタン位置調整、flexboxレイアウト
+- 🛠️ **依存関係管理**: BaseManager優先読み込み、ReferenceError解決
+- 📚 **ドキュメント強化**: 技術仕様、アーキテクチャ説明更新
 
 ### v1.4.0
 - ✨ Natural PSAアルゴリズムの追加
