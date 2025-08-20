@@ -130,11 +130,18 @@ class PerformanceManager {
         // キャッシュサイズの制限
         this.maxCacheSize = window.CONFIG?.PERFORMANCE?.CACHE_SIZE || 50;
         
-        // 定期的なガベージコレクション
-        setInterval(() => {
-            this.cleanupCache();
-            this.recordMemoryUsage();
-        }, 30000); // 30秒ごと
+        // 開発環境でのみ定期的なガベージコレクション
+        if (process.env.NODE_ENV === 'development') {
+            setInterval(() => {
+                this.cleanupCache();
+                this.recordMemoryUsage();
+            }, 60000); // 60秒ごとに変更
+        } else {
+            // 本番環境では手動クリーンアップのみ
+            setInterval(() => {
+                this.cleanupCache();
+            }, 120000); // 2分ごと
+        }
         
         // ページ非表示時のクリーンアップ
         document.addEventListener('visibilitychange', () => {
@@ -355,16 +362,19 @@ class PerformanceManager {
      * パフォーマンス監視のセットアップ
      */
     setupPerformanceMonitoring() {
-        // パフォーマンスメトリクスの収集
-        if ('performance' in window) {
-            this.setupPerformanceObserver();
+        // 開発環境でのみパフォーマンス監視を有効化
+        if (process.env.NODE_ENV === 'development') {
+            // パフォーマンスメトリクスの収集
+            if ('performance' in window) {
+                this.setupPerformanceObserver();
+            }
+            
+            // メモリ使用量の監視
+            this.setupMemoryMonitoring();
+            
+            // FPSの監視
+            this.setupFPSMonitoring();
         }
-        
-        // メモリ使用量の監視
-        this.setupMemoryMonitoring();
-        
-        // FPSの監視
-        this.setupFPSMonitoring();
     }
     
     /**
@@ -392,8 +402,14 @@ class PerformanceManager {
      * メモリ監視のセットアップ
      */
     setupMemoryMonitoring() {
-        if ('memory' in performance) {
+        // 開発環境でのみメモリ監視を有効化
+        if (process.env.NODE_ENV === 'development' && 'memory' in performance) {
             this.recordMemoryUsage();
+            
+            // 30秒間隔でメモリ監視（本番では無効）
+            setInterval(() => {
+                this.recordMemoryUsage();
+            }, 30000);
         }
     }
     
@@ -401,24 +417,30 @@ class PerformanceManager {
      * FPS監視のセットアップ
      */
     setupFPSMonitoring() {
-        let lastTime = performance.now();
-        let frameCount = 0;
-        
-        const measureFPS = (currentTime) => {
-            frameCount++;
+        // 開発環境でのみFPS監視を有効化（本番では無効）
+        if (process.env.NODE_ENV === 'development') {
+            let lastTime = performance.now();
+            let frameCount = 0;
             
-            if (currentTime - lastTime >= 1000) {
-                const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
-                this.recordMetric('fps', fps);
+            const measureFPS = (currentTime) => {
+                frameCount++;
                 
-                frameCount = 0;
-                lastTime = currentTime;
-            }
+                if (currentTime - lastTime >= 5000) { // 5秒間隔に変更
+                    const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                    this.recordMetric('fps', fps);
+                    
+                    frameCount = 0;
+                    lastTime = currentTime;
+                }
+                
+                // 条件付きで継続
+                if (frameCount < 300) { // 300フレーム後に停止
+                    requestAnimationFrame(measureFPS);
+                }
+            };
             
             requestAnimationFrame(measureFPS);
-        };
-        
-        requestAnimationFrame(measureFPS);
+        }
     }
     
     /**

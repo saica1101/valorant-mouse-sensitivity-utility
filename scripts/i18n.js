@@ -332,14 +332,15 @@ const I18N = {
     /**
      * 言語を設定
      * @param {string} language - 言語コード ('ja' | 'en')
+     * @param {Object} options - オプション { skipMainProcess: boolean }
      */
-    async setLanguage(language) {
+    async setLanguage(language, options = {}) {
         if (this.translations[language]) {
             this.currentLanguage = language;
             this.saveLanguage();
             
-            // メインプロセスにも言語変更を通知
-            if (window.electronAPI && window.electronAPI.setLanguage) {
+            // オプションでメインプロセス通知をスキップ（循環参照防止）
+            if (!options.skipMainProcess && window.electronAPI && window.electronAPI.setLanguage) {
                 try {
                     await window.electronAPI.setLanguage(language);
                 } catch (error) {

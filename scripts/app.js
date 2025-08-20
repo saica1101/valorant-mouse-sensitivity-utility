@@ -216,7 +216,10 @@ class MouseSensitivityUtility {
         if (window.electronAPI && window.electronAPI.onLanguageChanged) {
             window.electronAPI.onLanguageChanged((event, language) => {
                 if (window.I18N) {
-                    window.I18N.setLanguage(language);
+                    // メニューからの変更の場合は循環参照を防ぐためメインプロセス通知をスキップ
+                    this.isMenuTriggered = true;
+                    window.I18N.setLanguage(language, { skipMainProcess: true });
+                    this.isMenuTriggered = false;
                     // 言語変更時にアルゴリズム表示も更新
                     this.updateAlgorithmDisplay();
                 }
