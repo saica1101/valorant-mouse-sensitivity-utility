@@ -66,7 +66,7 @@ Valorantプレイヤー向けの最適なマウス感度を見つけるための
    - 🟰 **どちらも同じ**: 両方とも同程度に快適な場合
 4. 選択に基づいて次の候補が表示されます
 
-#### Natural PSA（Practical Sensitivity Algorithm）
+#### Natural PSA（Perfect Sensitivity Approximation）
 1. 現在の感度値が表示されます
 2. Valorantでテストして、感度の調整が必要かを判断
 3. 調整方向を選択:
