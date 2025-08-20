@@ -462,6 +462,10 @@ class MouseSensitivityUtility {
         
         // アルゴリズム表示の更新
         this.updateAlgorithmDisplay();
+        
+        // テーマボタンの表示を現在のテーマに合わせて更新
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+        this.setTheme(currentTheme);
     }
 
     /**
@@ -488,7 +492,34 @@ class MouseSensitivityUtility {
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(this.config.THEME.STORAGE_KEY, theme);
-        this.themeToggle.textContent = theme === 'dark' ? '☀️ ライトモード' : '🌙 ダークモード';
+        
+        // i18nシステムを使用してテーマボタンのテキストを更新
+        if (window.I18N && this.themeToggle) {
+            const icon = theme === 'dark' ? '☀️' : '🌙';
+            const textKey = theme === 'dark' ? 'ui.lightMode' : 'ui.darkMode';
+            const text = window.I18N.t(textKey);
+            
+            // span要素を取得または作成
+            let spanElement = this.themeToggle.querySelector('span[data-i18n]');
+            if (!spanElement) {
+                spanElement = document.createElement('span');
+                spanElement.setAttribute('data-i18n', textKey);
+                this.themeToggle.innerHTML = '';
+                this.themeToggle.appendChild(document.createTextNode(icon + ' '));
+                this.themeToggle.appendChild(spanElement);
+            } else {
+                // アイコンを更新
+                this.themeToggle.childNodes[0].textContent = icon + ' ';
+                // data-i18n属性を更新
+                spanElement.setAttribute('data-i18n', textKey);
+            }
+            
+            // テキストを更新
+            spanElement.textContent = text;
+        } else {
+            // フォールバック: i18nが利用できない場合
+            this.themeToggle.textContent = theme === 'dark' ? '☀️ ライトモード' : '🌙 ダークモード';
+        }
     }
 
     /**
