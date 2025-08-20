@@ -118,7 +118,7 @@ right_third = lower_bound + (2 * range) / 3
 #### Natural PSA（Practical Sensitivity Algorithm）
 ```
 # 初期設定
-base_sensitivity = 80 / DPI
+base_sensitivity = 280 / DPI(Valorant Pro Playerの多くがeDPI280の近似値の為)
 iterations = 7
 
 # 各反復での調整
