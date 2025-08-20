@@ -60,6 +60,7 @@ interface Translation {
     };
     errors: {
         dpiRange: string;
+        dpiRequired: string;
     };
     notifications: {
         adjustmentStarted: string;
@@ -143,7 +144,8 @@ const translations = {
             }
         },
         errors: {
-            dpiRange: 'DPI値は400から50000の間で入力してください'
+            dpiRange: 'DPI値は400から50000の間で入力してください',
+            dpiRequired: 'DPI値を入力してください'
         },
         notifications: {
             adjustmentStarted: '感度調整を開始しました',
@@ -214,7 +216,8 @@ const translations = {
             }
         },
         errors: {
-            dpiRange: 'Please enter a DPI value between 400 and 50,000'
+            dpiRange: 'Please enter a DPI value between 400 and 50,000',
+            dpiRequired: 'Please enter a DPI value'
         },
         notifications: {
             adjustmentStarted: 'Sensitivity adjustment started',

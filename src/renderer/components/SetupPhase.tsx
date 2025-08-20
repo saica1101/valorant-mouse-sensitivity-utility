@@ -19,14 +19,19 @@ const SetupPhase: React.FC<SetupPhaseProps> = ({
   onAlgorithmChange 
 }) => {
   const { t } = useLanguage();
-  const [currentDpi, setCurrentDpi] = useState<number>(0);
+  const [currentDpi, setCurrentDpi] = useState<number | null>(null);
   const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
 
   const presetDpis = [400, 800, 1600, 3200];
 
   const handleDpiInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
-    setCurrentDpi(value);
+    const inputValue = e.target.value;
+    if (inputValue === '') {
+      setCurrentDpi(null);
+    } else {
+      const value = parseInt(inputValue);
+      setCurrentDpi(isNaN(value) ? null : value);
+    }
     setSelectedPreset(null);
   };
 
@@ -36,7 +41,15 @@ const SetupPhase: React.FC<SetupPhaseProps> = ({
   };
 
   const handleStart = () => {
-    if (!currentDpi || currentDpi < 400 || currentDpi > 50000) {
+    if (currentDpi === null) {
+      onNotification({
+        type: 'error',
+        message: t('errors.dpiRequired', 'DPI値を入力してください')
+      });
+      return;
+    }
+    
+    if (currentDpi < 400 || currentDpi > 50000) {
       onNotification({
         type: 'error',
         message: t('errors.dpiRange', 'DPI値は400から50000の間で入力してください')
@@ -67,7 +80,7 @@ const SetupPhase: React.FC<SetupPhaseProps> = ({
             placeholder={t('ui.dpiPlaceholder', '例: 800')}
             min="400" 
             max="50000" 
-            value={currentDpi || ''}
+            value={currentDpi ?? ''}
             onChange={handleDpiInputChange}
             aria-describedby="dpi-help"
           />
@@ -96,7 +109,6 @@ const SetupPhase: React.FC<SetupPhaseProps> = ({
           className="btn btn-primary" 
           onClick={handleStart}
           style={{ width: '100%', marginTop: '20px' }}
-          disabled={!currentDpi}
         >
           {t('ui.startButton', '感度調整を開始')}
         </button>

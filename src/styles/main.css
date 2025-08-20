@@ -335,6 +335,11 @@ input[type="number"], select {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    pointer-events: none; /* コンテナ自体はクリックを受け付けない */
+}
+
+.notification-container > * {
+    pointer-events: auto; /* 子要素のみクリック可能 */
 }
 
 /* 通知のアニメーション */
@@ -357,6 +362,20 @@ input[type="number"], select {
     to {
         transform: translateX(100%);
         opacity: 0;
+    }
+}
+
+@keyframes collapseHeight {
+    from {
+        max-height: 100px;
+        margin-bottom: 10px;
+        padding: 12px 20px;
+    }
+    to {
+        max-height: 0;
+        margin-bottom: 0;
+        padding: 0 20px;
+        overflow: hidden;
     }
 }
 
@@ -403,6 +422,8 @@ input[type="number"], select {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow: hidden;
+    /* 削除アニメーション中でもレイアウトに影響しないように */
+    margin-bottom: 0;
 }
 
 .notification-content {
@@ -442,7 +463,8 @@ input[type="number"], select {
 }
 
 .notification.exiting {
-    animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    animation: slideOutRight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+               collapseHeight 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
 .notification:hover {
