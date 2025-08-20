@@ -5,7 +5,15 @@
 
 class MouseSensitivityUtility {
     constructor() {
-        this.baseSensi = 80;
+        // 設定を外部化
+        this.config = window.CONFIG;
+        
+        if (!this.config) {
+            alert('設定ファイルの読み込みに失敗しました。ページをリロードしてください。');
+            return;
+        }
+        
+        // アルゴリズム関連
         this.inputDPI = 0;
         this.lowerBound = 0;
         this.upperBound = 0;
@@ -15,7 +23,11 @@ class MouseSensitivityUtility {
         this.initializeElements();
         this.bindEvents();
         this.initializeTheme();
-        this.loadAppVersion();
+        
+        // バージョン読み込みを少し遅延させる
+        setTimeout(() => {
+            this.loadAppVersion();
+        }, 100);
     }
 
     /**
@@ -32,6 +44,7 @@ class MouseSensitivityUtility {
         this.resetBtn = document.getElementById('resetBtn');
         this.themeToggle = document.getElementById('themeToggle');
         this.versionElement = document.getElementById('version');
+        this.notificationContainer = document.getElementById('notificationContainer');
         
         this.setupPhase = document.getElementById('setupPhase');
         this.backPhase = document.getElementById('backPhase');
@@ -70,7 +83,7 @@ class MouseSensitivityUtility {
      * テーマの初期化
      */
     initializeTheme() {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem(this.config.THEME.STORAGE_KEY) || this.config.THEME.DEFAULT;
         this.setTheme(savedTheme);
     }
 
@@ -89,8 +102,29 @@ class MouseSensitivityUtility {
      */
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
+        localStorage.setItem(this.config.THEME.STORAGE_KEY, theme);
         this.themeToggle.textContent = theme === 'dark' ? '☀️ ライトモード' : '🌙 ダークモード';
+    }
+
+    /**
+     * アプリケーションバージョンの動的読み込み
+     */
+    async loadAppVersion() {
+        // 最低限のテスト：直接設定
+        if (this.versionElement) {
+            this.versionElement.textContent = this.config.APP.FALLBACK_VERSION;
+        }
+        
+        try {
+            if (window.electronAPI && window.electronAPI.getVersion) {
+                const version = await window.electronAPI.getVersion();
+                if (this.versionElement) {
+                    this.versionElement.textContent = `v${version}`;
+                }
+            }
+        } catch (error) {
+            console.warn('バージョン情報の取得に失敗しました:', error);
+        }
     }
 
     /**
@@ -104,27 +138,98 @@ class MouseSensitivityUtility {
     }
 
     /**
+     * 通知の表示
+     * @param {string} message - 表示するメッセージ
+     * @param {string} type - 通知の種類 ('success', 'error', 'info', 'warning')
+     * @param {number} duration - 表示時間（ミリ秒）
+     */
+    showNotification(message, type = 'info', duration = null) {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        
+        this.notificationContainer.appendChild(notification);
+        
+        // アニメーション用のタイムアウト
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 10);
+        
+        // 表示時間の設定
+        const displayDuration = duration || 
+            (type === 'error' ? this.config.UI.ERROR_DISPLAY_DURATION : this.config.UI.SUCCESS_DISPLAY_DURATION);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, this.config.UI.ANIMATION_DURATION);
+        }, displayDuration);
+    }
+
+    /**
+     * エラー表示
+     * @param {string} message - エラーメッセージ
+     */
+    showError(message) {
+        this.showNotification(message, 'error');
+    }
+
+    /**
+     * 成功表示
+     * @param {string} message - 成功メッセージ
+     */
+    showSuccess(message) {
+        this.showNotification(message, 'success');
+    }
+
+    /**
      * 感度調整の開始
      */
     startAdjustment() {
         const dpiValue = parseInt(this.dpiInput.value);
         
-        if (!dpiValue || dpiValue <= 0) {
-            alert('正しいDPI値を入力してください。');
+        if (!this.validateDPIInput(dpiValue)) {
             return;
         }
 
-        this.inputDPI = dpiValue;
-        
-        // 仕様に基づく計算
-        this.lowerBound = this.baseSensi / this.inputDPI;
-        this.upperBound = this.lowerBound * 8;
-        
-        // 三分探索の初期化
-        this.calculateTernaryPoints();
+        try {
+            this.inputDPI = dpiValue;
+            
+            // 仕様に基づく計算
+            this.lowerBound = this.config.BASE_SENSI / this.inputDPI;
+            this.upperBound = this.lowerBound * this.config.ALGORITHM.RANGE_MULTIPLIER;
+            
+            // 三分探索の初期化
+            this.calculateTernaryPoints();
 
-        this.showAdjustmentPhase();
-        this.updateDisplay();
+            this.showSuccess(`感度調整を開始します。DPI: ${dpiValue}`);
+            this.showAdjustmentPhase();
+            this.updateDisplay();
+        } catch (error) {
+            this.showError(`調整開始中にエラーが発生しました: ${error.message}`);
+        }
+    }
+
+    /**
+     * DPI入力値の検証
+     * @param {number} dpiValue - DPI値
+     * @returns {boolean} 検証結果
+     */
+    validateDPIInput(dpiValue) {
+        if (!dpiValue || dpiValue <= 0 || isNaN(dpiValue)) {
+            this.showError('正しいDPI値を入力してください（0より大きい数値）');
+            return false;
+        }
+        
+        if (dpiValue < this.config.VALIDATION.MIN_DPI || dpiValue > this.config.VALIDATION.MAX_DPI) {
+            this.showError(`DPIは${this.config.VALIDATION.MIN_DPI}〜${this.config.VALIDATION.MAX_DPI}の範囲で入力してください`);
+            return false;
+        }
+        
+        return true;
     }
 
     /**
@@ -158,7 +263,7 @@ class MouseSensitivityUtility {
         this.calculateTernaryPoints();
 
         // 収束判定：範囲が十分小さくなったら終了
-        if (Math.abs(this.upperBound - this.lowerBound) < 0.001) {
+        if (Math.abs(this.upperBound - this.lowerBound) < this.config.ALGORITHM.CONVERGENCE_THRESHOLD) {
             this.showFinishPhase();
         } else {
             this.updateDisplay();
@@ -169,10 +274,10 @@ class MouseSensitivityUtility {
      * 表示の更新
      */
     updateDisplay() {
-        this.leftCandidate.textContent = this.leftThird.toFixed(3);
-        this.rightCandidate.textContent = this.rightThird.toFixed(3);
-        this.lowerBoundDisplay.textContent = this.lowerBound.toFixed(3);
-        this.upperBoundDisplay.textContent = this.upperBound.toFixed(3);
+        this.leftCandidate.textContent = this.leftThird.toFixed(this.config.UI.DECIMAL_PLACES);
+        this.rightCandidate.textContent = this.rightThird.toFixed(this.config.UI.DECIMAL_PLACES);
+        this.lowerBoundDisplay.textContent = this.lowerBound.toFixed(this.config.UI.DECIMAL_PLACES);
+        this.upperBoundDisplay.textContent = this.upperBound.toFixed(this.config.UI.DECIMAL_PLACES);
     }
 
     /**
@@ -195,7 +300,8 @@ class MouseSensitivityUtility {
         this.finishPhase.classList.remove('hidden');
         // 最終感度は範囲の中央値
         const finalValue = (this.lowerBound + this.upperBound) / 2;
-        this.finalSensitivity.textContent = finalValue.toFixed(3);
+        this.finalSensitivity.textContent = finalValue.toFixed(this.config.UI.DECIMAL_PLACES);
+        this.showSuccess(`最適な感度が見つかりました: ${finalValue.toFixed(this.config.UI.DECIMAL_PLACES)}`);
     }
 
     /**
@@ -215,20 +321,6 @@ class MouseSensitivityUtility {
         this.upperBound = 0;
         this.leftThird = 0;
         this.rightThird = 0;
-    }
-
-    /**
-     * アプリケーションバージョンの読み込み
-     */
-    async loadAppVersion() {
-        try {
-            if (window.electronAPI && window.electronAPI.getAppVersion) {
-                const version = await window.electronAPI.getAppVersion();
-                this.versionElement.textContent = `v${version}`;
-            }
-        } catch (error) {
-            console.error('Failed to load app version:', error);
-        }
     }
 }
 

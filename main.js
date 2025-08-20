@@ -57,11 +57,7 @@ app.on('activate', () => {
   }
 });
 
-// テーマ切り替えのIPC通信
-ipcMain.handle('get-theme', () => {
-  return 'light'; // デフォルトはライトテーマ
-});
-
-ipcMain.handle('get-app-version', () => {
+// バージョン情報取得のIPC通信
+ipcMain.handle('get-version', () => {
   return app.getVersion();
 });

@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Valorant Mouse Sensitivity Utility</title>
     <link rel="stylesheet" href="styles/main.css">
+    <script src="scripts/config.js"></script>
 </head>
 <body>
+    <!-- 通知システム -->
+    <div id="notificationContainer" class="notification-container"></div>
+    
     <button class="theme-toggle" id="themeToggle">🌙 ダークモード</button>
     <div id="backPhase" class="hidden">
         <button class="btn btn-back" id="backBtn">🔙 戻る</button>
@@ -17,7 +21,7 @@
             <h1>🎯 VMSU</h1>
             <p>最適なマウス感度を見つけましょう</p>
             <div class="version-info">
-                <span id="version">v1.3.3</span>
+                <span id="version">読み込み中...</span>
             </div>
         </div>
 
@@ -79,6 +83,7 @@
         </div>
     </div>
 
+    <script src="scripts/config.js"></script>
     <script src="scripts/app.js"></script>
 </body>
 </html>
