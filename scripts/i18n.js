@@ -408,6 +408,19 @@ const I18N = {
             const key = element.getAttribute('data-i18n-aria');
             element.setAttribute('aria-label', this.t(key));
         });
+    },
+
+    /**
+     * I18Nシステムを初期化
+     */
+    async init() {
+        // 保存された言語設定を読み込み
+        this.loadSavedLanguage();
+        
+        // ページコンテンツを更新
+        this.updatePageContent();
+        
+        return Promise.resolve();
     }
 };
 

@@ -123,14 +123,32 @@ class MouseSensitivityUtility {
             // メニューからのアルゴリズム変更リスナーを設定  
             this.setupMenuAlgorithmListener();
             
-            // 初期アルゴリズム設定を読み込み
-            this.loadAlgorithmFromMain();
+            // 初期化の完了
+            this.initializeAfterDOM();
             
         } catch (error) {
             ErrorDisplay.showFatalError(
                 window.I18N?.t('errors.appError') || 'アプリケーションエラー',
                 `${window.I18N?.t('errors.initError') || 'アプリケーションの初期化中にエラーが発生しました'}: ${error.message}`
             );
+        }
+    }
+
+    /**
+     * DOM読み込み後の初期化処理
+     */
+    async initializeAfterDOM() {
+        try {
+            // I18Nの初期化を待つ
+            if (window.I18N && typeof window.I18N.init === 'function') {
+                await window.I18N.init();
+            }
+            
+            // 初期アルゴリズム設定を読み込み
+            await this.loadAlgorithmFromMain();
+            
+        } catch (error) {
+            console.warn('初期化後処理でエラーが発生しました:', error);
         }
     }
     
@@ -1060,6 +1078,8 @@ class MouseSensitivityUtility {
 }
 
 // アプリケーション開始
-document.addEventListener('DOMContentLoaded', () => {
-    new MouseSensitivityUtility();
+document.addEventListener('DOMContentLoaded', async () => {
+    const app = new MouseSensitivityUtility();
+    // 初期化後処理を実行
+    await app.initializeAfterDOM();
 });
